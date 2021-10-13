@@ -2,4 +2,4 @@
 
 Thank you for reading the 🐒 book!
 
-This repository is going to be updates soon with the book's code samples.
+This repository is going to be updated soon with the book's code samples.
