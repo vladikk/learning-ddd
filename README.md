@@ -2,4 +2,6 @@
 
 Thank you for reading the 🐒 book!
 
-This repository is going to be updated soon with the book's code samples.
+The "listings" folder contains all the code samples used in the book.
+
+Keep an eye on this repository, as at this moment I'm working on an open-source implementation of a subset of the Wolfdesk ticketing system described in the book's Preface.

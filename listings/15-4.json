@@ -1,0 +1,11 @@
+{
+    "type": "customer-updated",
+    "event-id": "6b7ce6c6-8587-4e4f-924a-cec028000ce6",
+    "customer-id": "01b18d56-b79a-4873-ac99-3d9f767dbe61",
+    "timestamp": 1615728520,
+    "payload": {
+        "status": "follow-up-set",
+        "follow-up-date": "2021/05/10",
+        "version": 8
+    }
+}

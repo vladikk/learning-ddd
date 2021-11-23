@@ -1,0 +1,7 @@
+{
+    "ticket-id": "c9d286ff-3bca-4f57-94d4-4d4e490867d1",
+    "event-id": 146,
+    "event-type": "ticket-escalated",
+    "escalation-reason": "missed-sla",
+    "escalation-time": 1628970815
+}

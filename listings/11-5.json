@@ -1,0 +1,13 @@
+{
+    "lead-id": 12,
+    "event-id": 0,
+    "event-type": "migrated-from-legacy",
+    "first-name": "Shauna",
+    "last-name": "Mercia",
+    "phone-number": "555-4753",
+    "status": "converted",
+    "last-contacted-on": "2020-05-27T12:02:12.51Z",
+    "order-placed-on": "2020-05-27T12:02:12.51Z",
+    "converted-on": "2020-05-27T12:38:44.12Z",
+    "followup-on": null
+}

@@ -1,0 +1,11 @@
+{
+    "type": "delivery-confirmed",
+    "event-id": "14101928-4d79-4da6-9486-dbc4837bc612",
+    "correlation-id": "08011958-6066-4815-8dbe-dee6d9e5ebac",
+    "delivery-id": "05011927-a328-4860-a106-737b2929db4e",
+    "timestamp": 1615718833,
+    "payload": {
+        "confirmed-by": "17bc9223-bdd6-4382-954d-f1410fd286bd",
+        "delivery-time": 1615701406
+    }
+}

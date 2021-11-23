@@ -1,0 +1,30 @@
+[
+    {
+        "lead-id": 12,
+        "event-id": 0,
+        "event-type": "lead-initialized",
+        "first-name": "Shauna",
+        "last-name": "Mercia",
+        "phone-number": "555-4753"
+    },
+    {
+        "lead-id": 12,
+        "event-id": 1,
+        "event-type": "contacted",
+        "timestamp": "2020-05-27T12:02:12.51Z"
+    },
+    {
+        "lead-id": 12,
+        "event-id": 2,
+        "event-type": "order-submitted",
+        "payment-deadline": "2020-05-30T12:02:12.51Z",
+        "timestamp": "2020-05-27T12:02:12.51Z"
+    },
+    {
+        "lead-id": 12,
+        "event-id": 3,
+        "event-type": "payment-confirmed",
+        "status": "converted",
+        "timestamp": "2020-05-27T12:38:44.12Z"
+    }
+]

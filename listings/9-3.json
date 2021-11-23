@@ -1,0 +1,19 @@
+{
+    "campaign-id": "364b33c3-2171-446d-b652-8e5a7b2be1af",
+    "state": {
+        "name": "Autumn 2017",
+        "publishing-state": "DEACTIVATED",
+        "ad-locations": [
+            "..."
+        ],
+        "...": "..."
+    },
+    "outbox": [
+        {
+            "campaign-id": "364b33c3-2171-446d-b652-8e5a7b2be1af",
+            "type": "campaign-deactivated",
+            "reason": "Goals met",
+            "published": false
+        }
+    ]
+}
