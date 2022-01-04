@@ -7,7 +7,7 @@ public class Ticket
     public void Execute(EvaluateAutomaticActions cmd)
     {
         if (this.IsEscalated && this.RemainingTimePercentage < 0.5 &&
-            GetUnreadMessagesCount(for: AssignedAgent) > 0)
+            GetUnreadMessagesCount(forAgent: AssignedAgent) > 0)
         {
             _agent = AssignNewAgent();
         }
