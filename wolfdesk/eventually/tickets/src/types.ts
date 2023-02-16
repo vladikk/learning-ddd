@@ -1,10 +1,10 @@
 import { z } from "zod";
 import * as commands from "./ticket.command.schemas";
 import * as events from "./ticket.event.schemas";
-import * as states from "./ticket.schemas";
+import { Message, Ticket } from "./ticket.schemas";
 
-export type Ticket = z.infer<typeof states.Ticket>;
-export type Message = z.infer<typeof states.Message>;
+export type Ticket = z.infer<typeof Ticket>;
+export type Message = z.infer<typeof Message>;
 
 export type TicketCommands = {
   OpenTicket: z.infer<typeof commands.OpenTicket>;
@@ -33,7 +33,7 @@ export type TicketEvents = {
 };
 
 export const schemas = {
-  state: states.Ticket,
+  state: Ticket,
   commands: {
     OpenTicket: commands.OpenTicket,
     CloseTicket: commands.CloseTicket,
