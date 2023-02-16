@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2021",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "sourceRoot": "src",
+    "outDir": "dist",
+    "strict": true
+  },
+  "include": ["src"]
+}
