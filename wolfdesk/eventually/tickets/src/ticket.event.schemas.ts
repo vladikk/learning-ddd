@@ -2,11 +2,13 @@ import { ZodEmpty } from "@rotorsoft/eventually";
 import { z } from "zod";
 import * as commands from "./ticket.command.schemas";
 
-export const TicketOpened = commands.OpenTicket.describe(
-  "A new ticket was opened"
-);
+export const TicketOpened = commands.OpenTicket.and(
+  z.object({ messageId: z.string().uuid() })
+).describe("A new ticket was opened");
 export const TicketAssigned = commands.AssignTicket;
-export const MessageAdded = commands.AddMessage;
+export const MessageAdded = commands.AddMessage.and(
+  z.object({ messageId: z.string().uuid() })
+);
 export const TicketClosed = commands.CloseTicket;
 export const TicketEscalationRequested = commands.RequestTicketEscalation.and(
   z.object({
