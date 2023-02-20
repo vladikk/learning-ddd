@@ -15,9 +15,9 @@ const Schema = z.object({
   escalationId: z.string().uuid().optional(),
   closedById: z.string().uuid().optional(),
 });
-type Ticket = z.infer<typeof Schema>;
+export type TicketProjection = z.infer<typeof Schema>;
 
-export const Tickets = (): Projector<Ticket, TicketEvents> => ({
+export const Tickets = (): Projector<TicketProjection, TicketEvents> => ({
   description: "Projects ticket events into a flat read model",
   schemas: {
     state: Schema,
@@ -38,8 +38,30 @@ export const Tickets = (): Projector<Ticket, TicketEvents> => ({
         ],
       });
     },
-    TicketClosed: () => Promise.resolve({}),
-    TicketAssigned: () => Promise.resolve({}),
+    TicketClosed: ({ data }) => {
+      return Promise.resolve({
+        upserts: [
+          {
+            where: { id: data.ticketId },
+            values: {
+              closedById: data.closedById,
+            },
+          },
+        ],
+      });
+    },
+    TicketAssigned: ({ data }) => {
+      return Promise.resolve({
+        upserts: [
+          {
+            where: { id: data.ticketId },
+            values: {
+              agentId: data.agentId,
+            },
+          },
+        ],
+      });
+    },
     MessageAdded: () => Promise.resolve({}),
     TicketEscalationRequested: () => Promise.resolve({}),
     TicketEscalated: () => Promise.resolve({}),
