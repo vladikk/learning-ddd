@@ -1,4 +1,4 @@
-import { app, client, dispose } from "@rotorsoft/eventually";
+import { app, client, dispose, State } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import { openTicket } from "./commands";
@@ -18,9 +18,13 @@ describe("tickets projector", () => {
   it("should project tickets", async () => {
     const ticketId = chance.guid();
     await openTicket(ticketId, "assign me", "Opening a new ticket");
-    const count = await client().read(Tickets, ticketId, (p) =>
-      expect(p.state.id).toBeDefined()
-    );
+    const records: Array<State> = [];
+    const count = await client().read(Tickets, ticketId, ({ state }) => {
+      expect(state.id).toBeDefined();
+      records.push(state);
+    });
     expect(count).toBe(1);
+    // just to check projection while preparing test
+    console.table(records);
   });
 });
