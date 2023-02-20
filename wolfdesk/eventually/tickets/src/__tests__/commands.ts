@@ -68,3 +68,14 @@ export const addMessage = (
     },
     { id: ticketId }
   );
+
+export const requestTicketEscalation = (
+  ticketId: string,
+  requestedBy = chance.guid()
+) =>
+  client().command(
+    Ticket,
+    "RequestTicketEscalation",
+    { ticketId, requestedBy },
+    { id: ticketId }
+  );
