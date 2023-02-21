@@ -20,7 +20,7 @@ export const RequestedEscalation = (): Policy<
           {
             ticketId: data.ticketId,
             requestId: data.requestId,
-            requestedBy: data.requestedBy,
+            requestedById: data.requestedById,
           },
           {
             id: data.ticketId,

@@ -98,10 +98,32 @@ export const Ticket = (
         bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
       ]);
     },
-    ReassignTicket: () => Promise.resolve([]),
-    MarkMessageDelivered: (data) =>
-      Promise.resolve([bind("MessageDelivered", { ...data })]),
-    AcknowledgeMessage: () => Promise.resolve([]),
-    MarkTicketResolved: () => Promise.resolve([]),
+    ReassignTicket: (data, state) => {
+      if (!state.ticketId) throw new Error("Cannot reassign when empty");
+      if (state.closedById) throw new Error("Cannot reassign when closed");
+      // TODO: check other reassignment invariants
+      return Promise.resolve([bind("TicketReassigned", { ...data })]);
+    },
+    MarkMessageDelivered: (data, state) => {
+      if (!state.ticketId) throw new Error("Cannot mark delivered when empty");
+      if (state.closedById)
+        throw new Error("Cannot mark delivered when closed");
+      if (!state.messages[data.messageId])
+        throw new Error("Cannot mark delivered when not found");
+      return Promise.resolve([bind("MessageDelivered", { ...data })]);
+    },
+    AcknowledgeMessage: (data, state) => {
+      if (!state.ticketId) throw new Error("Cannot mark read when empty");
+      if (state.closedById) throw new Error("Cannot mark read when closed");
+      if (!state.messages[data.messageId])
+        throw new Error("Cannot mark read when not found");
+      return Promise.resolve([bind("MessageRead", { ...data })]);
+    },
+    MarkTicketResolved: (data, state) => {
+      if (!state.ticketId) throw new Error("Cannot mark resolved when empty");
+      if (state.closedById) throw new Error("Cannot mark resolved when closed");
+      // TODO: check other resolve invariants
+      return Promise.resolve([bind("TicketResolved", { ...data })]);
+    },
   },
 });

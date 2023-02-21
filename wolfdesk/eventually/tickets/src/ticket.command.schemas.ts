@@ -33,13 +33,13 @@ export const CloseTicket = z.object({
 
 export const RequestTicketEscalation = z.object({
   ticketId: z.string().uuid(),
-  requestedBy: z.string().uuid(),
+  requestedById: z.string().uuid(),
 });
 
 export const EscalateTicket = z.object({
   requestId: z.string().uuid(),
   ticketId: z.string().uuid(),
-  requestedBy: z.string().uuid(),
+  requestedById: z.string().uuid(),
 });
 
 export const ReassignTicket = z.object({
@@ -59,5 +59,5 @@ export const AcknowledgeMessage = z.object({
 
 export const MarkTicketResolved = z.object({
   ticketId: z.string().uuid(),
-  resolvedBy: z.string().uuid(),
+  resolvedById: z.string().uuid(),
 });
