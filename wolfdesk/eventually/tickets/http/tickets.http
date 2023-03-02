@@ -16,3 +16,7 @@ Content-Type: application/json
 ###
 
 GET {{host}}/ticket/c16b0637-b1b3-4dd5-9ecc-0e5ac5fbc490
+
+###
+
+GET {{host}}/tickets?ids=c16b0637-b1b3-4dd5-9ecc-0e5ac5fbc490
