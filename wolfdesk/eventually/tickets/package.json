@@ -15,9 +15,9 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@rotorsoft/eventually": "^5.0.8",
-    "@rotorsoft/eventually-express": "^5.0.8",
-    "@rotorsoft/eventually-pg": "^5.0.4",
+    "@rotorsoft/eventually": "^5.0.9",
+    "@rotorsoft/eventually-express": "^5.0.9",
+    "@rotorsoft/eventually-pg": "^5.0.5",
     "zod": "^3.20.6"
   },
   "devDependencies": {

@@ -71,11 +71,58 @@ export const addMessage = (
 
 export const requestTicketEscalation = (
   ticketId: string,
-  requestedBy = chance.guid()
+  requestedById = chance.guid()
 ) =>
   client().command(
     Ticket,
     "RequestTicketEscalation",
-    { ticketId, requestedBy },
+    { ticketId, requestedById },
+    { id: ticketId }
+  );
+
+export const escalateTicket = (
+  ticketId: string,
+  requestId = chance.guid(),
+  requestedById = chance.guid()
+) =>
+  client().command(
+    Ticket,
+    "EscalateTicket",
+    { ticketId, requestId, requestedById },
+    { id: ticketId }
+  );
+
+export const reassignTicket = (ticketId: string, agentId = chance.guid()) =>
+  client().command(
+    Ticket,
+    "ReassignTicket",
+    { ticketId, agentId },
+    { id: ticketId }
+  );
+
+export const markMessageDelivered = (ticketId: string, messageId: string) =>
+  client().command(
+    Ticket,
+    "MarkMessageDelivered",
+    { ticketId, messageId },
+    { id: ticketId }
+  );
+
+export const acknowledgeMessage = (ticketId: string, messageId: string) =>
+  client().command(
+    Ticket,
+    "AcknowledgeMessage",
+    { ticketId, messageId },
+    { id: ticketId }
+  );
+
+export const markTicketResolved = (
+  ticketId: string,
+  resolvedById = chance.guid()
+) =>
+  client().command(
+    Ticket,
+    "MarkTicketResolved",
+    { ticketId, resolvedById },
     { id: ticketId }
   );

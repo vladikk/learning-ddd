@@ -1,5 +1,6 @@
 import { Aggregate, bind } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
+import * as errors from "./errors";
 import { Priority } from "./ticket.schemas";
 import * as types from "./types";
 
@@ -57,24 +58,31 @@ export const Ticket = (
   // commands handlers
   on: {
     OpenTicket: (data, state) => {
-      if (state.ticketId) throw new Error("Cannot open twice");
+      if (state.ticketId)
+        throw new errors.TicketCannotOpenTwiceError(state.ticketId);
       return Promise.resolve([
         bind("TicketOpened", { ...data, messageId: randomUUID() }),
       ]);
     },
     CloseTicket: (data, state) => {
-      if (!state.ticketId) throw new Error("Cannot close when empty");
-      if (state.closedById) throw new Error("Cannot close twice");
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketCannotCloseTwiceError(state.ticketId);
       return Promise.resolve([bind("TicketClosed", data)]);
     },
     AssignTicket: (data, state) => {
-      if (!state.ticketId) throw new Error("Cannot assign when empty");
-      if (state.closedById) throw new Error("Cannot assign when closed");
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
       return Promise.resolve([bind("TicketAssigned", data)]);
     },
     AddMessage: (data, state) => {
-      if (!state.ticketId) throw new Error("Cannot add when empty");
-      if (state.closedById) throw new Error("Cannot add when closed");
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
       // TODO: check if data.from/data.to match this ticket
       return Promise.resolve([
         bind("MessageAdded", { ...data, messageId: randomUUID() }),
@@ -82,26 +90,57 @@ export const Ticket = (
     },
     RequestTicketEscalation: (data, state) => {
       if (!state.ticketId)
-        throw new Error("Cannot request escalation when empty");
+        throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
-        throw new Error("Cannot request escalation when closed");
+        throw new errors.TicketIsClosedError(state.ticketId);
       // TODO: check other request escalation invariants
       return Promise.resolve([
         bind("TicketEscalationRequested", { ...data, requestId: randomUUID() }),
       ]);
     },
     EscalateTicket: (data, state) => {
-      if (!state.ticketId) throw new Error("Cannot escalate when empty");
-      if (state.closedById) throw new Error("Cannot escalate when closed");
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
       // TODO: check other escalation invariants
       return Promise.resolve([
         bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
       ]);
     },
-    ReassignTicket: () => Promise.resolve([]),
-    MarkMessageDelivered: (data) =>
-      Promise.resolve([bind("MessageDelivered", { ...data })]),
-    AcknowledgeMessage: () => Promise.resolve([]),
-    MarkTicketResolved: () => Promise.resolve([]),
+    ReassignTicket: (data, state) => {
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
+      // TODO: check other reassignment invariants
+      return Promise.resolve([bind("TicketReassigned", { ...data })]);
+    },
+    MarkMessageDelivered: (data, state) => {
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.messages[data.messageId])
+        throw new errors.MessageNotFoundError(data.messageId);
+      return Promise.resolve([bind("MessageDelivered", { ...data })]);
+    },
+    AcknowledgeMessage: (data, state) => {
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.messages[data.messageId])
+        throw new errors.MessageNotFoundError(data.messageId);
+      return Promise.resolve([bind("MessageRead", { ...data })]);
+    },
+    MarkTicketResolved: (data, state) => {
+      if (!state.ticketId)
+        throw new errors.TicketIsNotOpenError(state.ticketId);
+      if (state.closedById)
+        throw new errors.TicketIsClosedError(state.ticketId);
+      // TODO: check other resolve invariants
+      return Promise.resolve([bind("TicketResolved", { ...data })]);
+    },
   },
 });

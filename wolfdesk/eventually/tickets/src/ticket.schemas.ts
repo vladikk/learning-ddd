@@ -70,5 +70,6 @@ export const Ticket = z.object({
   messages: z.record(z.string().uuid(), Message),
   agentId: z.string().uuid().optional(),
   escalationId: z.string().uuid().optional(),
+  resolvedById: z.string().uuid().optional(),
   closedById: z.string().uuid().optional(),
 });
