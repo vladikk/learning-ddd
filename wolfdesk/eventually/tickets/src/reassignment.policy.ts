@@ -1,5 +1,7 @@
-import { bind, Empty, Policy } from "@rotorsoft/eventually";
+import { client, Empty, Policy } from "@rotorsoft/eventually";
+import { Ticket } from "./ticket.aggregate";
 import { ReassignmentCronTriggered } from "./ticket.event.schemas";
+import { TicketProjection } from "./ticket.projector";
 import * as types from "./types";
 
 export const Reassingment = (): Policy<
@@ -13,22 +15,25 @@ export const Reassingment = (): Policy<
   },
   on: {
     ReassignmentCronTriggered: () => {
-      // TODO: load next ticket with expired agent response window (a query to the read model?)
-      // TODO: if there are more than one, how to trigger this policy again - policies are limited to just 1 command output
-      const ticketId = "";
-      const agentId = ""; // TODO: find new agent
-      return Promise.resolve(
-        bind(
-          "ReassignTicket",
-          {
-            ticketId,
-            agentId,
-          },
-          {
-            id: ticketId,
-          }
-        )
-      );
+      setImmediate(async () => {
+        // TODO: load batch of tickets with expired agent response window (a query to the read model?)
+        const expired: Array<TicketProjection> = [];
+        for (const ticket of expired) {
+          const agentId = ""; // TODO: find new agent
+          await client().command(
+            Ticket,
+            "ReassignTicket",
+            {
+              ticketId: ticket.id,
+              agentId,
+            },
+            {
+              id: ticket.id,
+            }
+          );
+        }
+      });
+      return Promise.resolve(undefined);
     },
   },
 });

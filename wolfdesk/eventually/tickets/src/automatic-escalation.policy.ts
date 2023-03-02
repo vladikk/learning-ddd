@@ -1,6 +1,8 @@
-import { bind, Empty, Policy } from "@rotorsoft/eventually";
+import { client, Empty, Policy } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
+import { Ticket } from "./ticket.aggregate";
 import { EscalationCronTriggered } from "./ticket.event.schemas";
+import { TicketProjection } from "./ticket.projector";
 import * as types from "./types";
 
 export const AutomaticEscalation = (): Policy<
@@ -14,22 +16,31 @@ export const AutomaticEscalation = (): Policy<
   },
   on: {
     EscalationCronTriggered: () => {
-      // TODO: load next ticket with expired reponse time (a query to the read model?)
-      // TODO: if there are more than one, how to trigger this policy again - policies are limited to just 1 command output
-      const ticketId = "";
-      return Promise.resolve(
-        bind(
-          "EscalateTicket",
-          {
-            ticketId,
-            requestId: randomUUID(),
-            requestedBy: "AutomaticEscalation",
-          },
-          {
-            id: ticketId,
-          }
-        )
-      );
+      setImmediate(async () => {
+        // TODO: load batch of tickets with expired reponse times (a query to the read model?)
+        const expired: Array<TicketProjection> = [];
+        for (const ticket of expired) {
+          await client().command(
+            Ticket,
+            "EscalateTicket",
+            {
+              ticketId: ticket.id,
+              requestId: randomUUID(),
+              requestedById: "AutomaticEscalation",
+            },
+            {
+              id: ticket.id,
+            }
+          );
+        }
+        // TODO: if batch size == MAX, can raise event recursively
+        // if (expired.length == 100)
+        //   await client().event(AutomaticEscalation, {
+        //     name: "EscalationCronTriggered",
+        //     data: {},
+        //   });
+      });
+      return Promise.resolve(undefined);
     },
   },
 });
