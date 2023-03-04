@@ -1,7 +1,7 @@
 import { bind, Policy } from "@rotorsoft/eventually";
-import { randomUUID } from "crypto";
 import * as types from "./types";
 import { TicketOpened } from "./ticket.event.schemas";
+import { findAgent } from "./services/agent";
 
 export const Assignment = (): Policy<
   Pick<types.TicketCommands, "AssignTicket">,
@@ -14,14 +14,11 @@ export const Assignment = (): Policy<
   },
   on: {
     TicketOpened: ({ data }) => {
-      // TODO: find best agent for this ticket - autopilot AI
-      const agentId = randomUUID();
-      const reassignAfter = new Date();
-      const escalateAfter = new Date();
+      const agent = findAgent();
       return Promise.resolve(
         bind(
           "AssignTicket",
-          { ticketId: data.ticketId, agentId, reassignAfter, escalateAfter },
+          { ticketId: data.ticketId, ...agent },
           {
             id: data.ticketId,
           }

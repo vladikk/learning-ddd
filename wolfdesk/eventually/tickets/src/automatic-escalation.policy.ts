@@ -5,6 +5,8 @@ import { EscalationCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
 
+export const AUTO_ESCALATION_ID = "00000000-0000-1000-0000-100000000000";
+
 export const AutomaticEscalation = (): Policy<
   Pick<types.TicketCommands, "EscalateTicket">,
   { EscalationCronTriggered: Empty }
@@ -36,7 +38,7 @@ export const AutomaticEscalation = (): Policy<
             {
               ticketId: ticket.id,
               requestId: randomUUID(),
-              requestedById: randomUUID(), // TODO: define policy uuid
+              requestedById: AUTO_ESCALATION_ID,
             },
             {
               id: ticket.id,

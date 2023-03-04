@@ -1,9 +1,10 @@
 import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
-import { randomUUID } from "crypto";
 import { Ticket } from "./ticket.aggregate";
 import { CheckInactiveTicketsCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
+
+export const CLOSING_ID = "00000000-0000-1000-0000-200000000000";
 
 export const Closing = (): Policy<
   Pick<types.TicketCommands, "CloseTicket">,
@@ -35,7 +36,7 @@ export const Closing = (): Policy<
             "CloseTicket",
             {
               ticketId: ticket.id,
-              closedById: randomUUID(), // TODO: define policy uuid
+              closedById: CLOSING_ID,
             },
             {
               id: ticket.id,

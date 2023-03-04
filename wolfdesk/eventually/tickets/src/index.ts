@@ -1,11 +1,14 @@
-import { app, bootstrap, store } from "@rotorsoft/eventually";
+import { app, bootstrap, Scope, store } from "@rotorsoft/eventually";
 import { ExpressApp } from "@rotorsoft/eventually-express";
 import {
   PostgresProjectorStore,
   PostgresStore,
 } from "@rotorsoft/eventually-pg";
 import { Assignment } from "./assignment.policy";
+import { AutomaticEscalation } from "./automatic-escalation.policy";
+import { Closing } from "./closing.policy";
 import { Delivery } from "./delivery.policy";
+import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
 import { Ticket } from "./ticket.aggregate";
 import { TicketProjection, Tickets } from "./ticket.projector";
@@ -45,8 +48,11 @@ bootstrap(async () => {
   app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
+    .with(Reassingment, { scope: Scope.public })
     .with(Delivery)
     .with(RequestedEscalation)
+    .with(AutomaticEscalation, { scope: Scope.public })
+    .with(Closing, { scope: Scope.public })
     .with(Tickets)
     .withStore(Tickets, pgTicketProjectorStore)
     .build();
