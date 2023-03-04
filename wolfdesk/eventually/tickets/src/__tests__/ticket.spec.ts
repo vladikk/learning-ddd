@@ -66,6 +66,9 @@ describe("ticket", () => {
     expect(snapshot2.state.agentId).not.toEqual(agentId);
     expect(snapshot2.state.resolvedById).toBeDefined;
     expect(snapshot2.state.closedById).toBeDefined;
+    expect(snapshot2.state.closeAfter).toBeDefined;
+    expect(snapshot2.state.escalateAfter).toBeDefined;
+    expect(snapshot2.state.reassignAfter).toBeDefined;
     expect(message2?.wasDelivered).toBe(true);
     expect(message2?.wasRead).toBe(true);
 

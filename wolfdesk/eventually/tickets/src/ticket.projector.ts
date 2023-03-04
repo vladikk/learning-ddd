@@ -4,17 +4,24 @@ import { Priority } from "./ticket.schemas";
 import { schemas, TicketEvents } from "./types";
 
 const Schema = z.object({
+  // ids
   id: z.string().uuid(),
   productId: z.string().uuid(),
   supportCategoryId: z.string().uuid(),
+  escalationId: z.string().uuid().optional(),
+  // props
   priority: z.nativeEnum(Priority),
   title: z.string().min(1),
   messages: z.number().int(),
+  // user ids
   userId: z.string().uuid(),
   agentId: z.string().uuid().optional(),
-  escalationId: z.string().uuid().optional(),
   resolvedById: z.string().uuid().optional(),
   closedById: z.string().uuid().optional(),
+  // expiration windows
+  reassignAfter: z.date().optional(),
+  escalateAfter: z.date().optional(),
+  closeAfter: z.date().optional(),
 });
 export type TicketProjection = z.infer<typeof Schema>;
 
@@ -64,6 +71,8 @@ export const Tickets = (): Projector<
             where: { id: data.ticketId },
             values: {
               agentId: data.agentId,
+              escalateAfter: data.escalateAfter,
+              reassignAfter: data.reassignAfter,
             },
           },
         ],
@@ -104,6 +113,8 @@ export const Tickets = (): Projector<
             where: { id: data.ticketId },
             values: {
               agentId: data.agentId,
+              escalateAfter: data.escalateAfter,
+              reassignAfter: data.reassignAfter,
             },
           },
         ],

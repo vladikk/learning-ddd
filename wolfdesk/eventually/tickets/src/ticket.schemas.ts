@@ -72,4 +72,7 @@ export const Ticket = z.object({
   escalationId: z.string().uuid().optional(),
   resolvedById: z.string().uuid().optional(),
   closedById: z.string().uuid().optional(),
+  reassignAfter: z.date().optional(),
+  escalateAfter: z.date().optional(),
+  closeAfter: z.date().optional(),
 });

@@ -1,7 +1,8 @@
-import { client, Empty, Policy } from "@rotorsoft/eventually";
+import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
+import { randomUUID } from "crypto";
 import { Ticket } from "./ticket.aggregate";
 import { CheckInactiveTicketsCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection } from "./ticket.projector";
+import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
 
 export const Closing = (): Policy<
@@ -16,15 +17,25 @@ export const Closing = (): Policy<
   on: {
     CheckInactiveTicketsCronTriggered: () => {
       setImmediate(async () => {
-        // TODO: load batch of tickets with expired inactivity window (a query to the read model?)
+        // load batch of tickets with expired inactivity window
         const expired: Array<TicketProjection> = [];
+        await client().read(
+          Tickets,
+          {
+            where: {
+              closeAfter: { operator: Operator.lt, value: new Date() },
+            },
+            limit: 10,
+          },
+          (p) => expired.push(p.state)
+        );
         for (const ticket of expired) {
           await client().command(
             Ticket,
             "CloseTicket",
             {
               ticketId: ticket.id,
-              closedById: "Closing",
+              closedById: randomUUID(), // TODO: define policy uuid
             },
             {
               id: ticket.id,

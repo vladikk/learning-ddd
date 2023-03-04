@@ -1,7 +1,8 @@
-import { client, Empty, Policy } from "@rotorsoft/eventually";
+import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
+import { randomUUID } from "crypto";
 import { Ticket } from "./ticket.aggregate";
 import { ReassignmentCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection } from "./ticket.projector";
+import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
 
 export const Reassingment = (): Policy<
@@ -16,16 +17,30 @@ export const Reassingment = (): Policy<
   on: {
     ReassignmentCronTriggered: () => {
       setImmediate(async () => {
-        // TODO: load batch of tickets with expired agent response window (a query to the read model?)
+        // load batch of tickets with expired agent response window
         const expired: Array<TicketProjection> = [];
+        await client().read(
+          Tickets,
+          {
+            where: {
+              reassignAfter: { operator: Operator.lt, value: new Date() },
+            },
+            limit: 10,
+          },
+          (p) => expired.push(p.state)
+        );
         for (const ticket of expired) {
-          const agentId = ""; // TODO: find new agent
+          const agentId = randomUUID();
+          const reassignAfter = new Date(Date.now() + 100000);
+          const escalateAfter = new Date(Date.now() + 100000);
           await client().command(
             Ticket,
             "ReassignTicket",
             {
               ticketId: ticket.id,
               agentId,
+              reassignAfter,
+              escalateAfter,
             },
             {
               id: ticket.id,

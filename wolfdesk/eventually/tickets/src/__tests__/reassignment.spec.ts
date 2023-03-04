@@ -1,14 +1,15 @@
-import { app, client, dispose } from "@rotorsoft/eventually";
+import { app, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { openTicket } from "./commands";
+import { assignTicket, openTicket } from "./commands";
 import { Reassingment } from "../reassignment.policy";
+import { Tickets } from "../ticket.projector";
 
 const chance = new Chance();
 
-describe("reassignment escalation policy", () => {
+describe("reassignment policy", () => {
   beforeAll(() => {
-    app().with(Ticket).with(Reassingment).build();
+    app().with(Ticket).with(Tickets).with(Reassingment).build();
   });
 
   afterAll(async () => {
@@ -18,6 +19,7 @@ describe("reassignment escalation policy", () => {
   it("should reassign", async () => {
     const ticketId = chance.guid();
     await openTicket(ticketId, "assign me", "Opening a new ticket");
+    await assignTicket(ticketId, chance.guid(), new Date(), new Date());
     await client().event(Reassingment, {
       name: "ReassignmentCronTriggered",
       data: {},
@@ -27,7 +29,10 @@ describe("reassignment escalation policy", () => {
       created: new Date(),
       metadata: { correlation: "", causation: {} },
     });
+    await sleep(1000);
     const snapshot = await client().load(Ticket, ticketId);
     expect(snapshot.state.agentId).toBeDefined();
+    expect(snapshot.state.reassignAfter?.getTime()).toBeGreaterThan(Date.now());
+    expect(snapshot.state.escalateAfter?.getTime()).toBeGreaterThan(Date.now());
   });
 });

@@ -1,8 +1,8 @@
-import { client, Empty, Policy } from "@rotorsoft/eventually";
+import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
 import { Ticket } from "./ticket.aggregate";
 import { EscalationCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection } from "./ticket.projector";
+import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
 
 export const AutomaticEscalation = (): Policy<
@@ -17,8 +17,18 @@ export const AutomaticEscalation = (): Policy<
   on: {
     EscalationCronTriggered: () => {
       setImmediate(async () => {
-        // TODO: load batch of tickets with expired reponse times (a query to the read model?)
+        // load batch of tickets with expired escalation time
         const expired: Array<TicketProjection> = [];
+        await client().read(
+          Tickets,
+          {
+            where: {
+              escalateAfter: { operator: Operator.lt, value: new Date() },
+            },
+            limit: 10,
+          },
+          (p) => expired.push(p.state)
+        );
         for (const ticket of expired) {
           await client().command(
             Ticket,
@@ -26,7 +36,7 @@ export const AutomaticEscalation = (): Policy<
             {
               ticketId: ticket.id,
               requestId: randomUUID(),
-              requestedById: "AutomaticEscalation",
+              requestedById: randomUUID(), // TODO: define policy uuid
             },
             {
               id: ticket.id,

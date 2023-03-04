@@ -16,10 +16,12 @@ export const Assignment = (): Policy<
     TicketOpened: ({ data }) => {
       // TODO: find best agent for this ticket - autopilot AI
       const agentId = randomUUID();
+      const reassignAfter = new Date();
+      const escalateAfter = new Date();
       return Promise.resolve(
         bind(
           "AssignTicket",
-          { ticketId: data.ticketId, agentId },
+          { ticketId: data.ticketId, agentId, reassignAfter, escalateAfter },
           {
             id: data.ticketId,
           }

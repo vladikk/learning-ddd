@@ -3,6 +3,8 @@ import { Chance } from "chance";
 import { Ticket } from "../ticket.aggregate";
 import { Priority } from "../ticket.schemas";
 const chance = new Chance();
+const DAY = 24 * 60 * 60 * 1000;
+const oneDay = () => new Date(Date.now() + DAY);
 
 export const openTicket = (
   ticketId: string,
@@ -11,7 +13,8 @@ export const openTicket = (
   userId = chance.guid(),
   productId = chance.guid(),
   supportCategoryId = chance.guid(),
-  priority = Priority.Low
+  priority = Priority.Low,
+  closeAfter = oneDay()
 ) =>
   client().command(
     Ticket,
@@ -24,17 +27,25 @@ export const openTicket = (
       userId,
       title,
       message,
+      closeAfter,
     },
     { id: ticketId }
   );
 
-export const assignTicket = (ticketId: string, agentId = chance.guid()) =>
+export const assignTicket = (
+  ticketId: string,
+  agentId = chance.guid(),
+  escalateAfter = oneDay(),
+  reassignAfter = oneDay()
+) =>
   client().command(
     Ticket,
     "AssignTicket",
     {
       ticketId,
       agentId,
+      escalateAfter,
+      reassignAfter,
     },
     { id: ticketId }
   );
@@ -92,11 +103,16 @@ export const escalateTicket = (
     { id: ticketId }
   );
 
-export const reassignTicket = (ticketId: string, agentId = chance.guid()) =>
+export const reassignTicket = (
+  ticketId: string,
+  agentId = chance.guid(),
+  escalateAfter = oneDay(),
+  reassignAfter = oneDay()
+) =>
   client().command(
     Ticket,
     "ReassignTicket",
-    { ticketId, agentId },
+    { ticketId, agentId, escalateAfter, reassignAfter },
     { id: ticketId }
   );
 
