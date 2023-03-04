@@ -1,7 +1,7 @@
 import { bind, Policy } from "@rotorsoft/eventually";
 import * as types from "./types";
 import { TicketOpened } from "./ticket.event.schemas";
-import { findAgent } from "./services/agent";
+import { assignAgent } from "./services/agent";
 
 export const Assignment = (): Policy<
   Pick<types.TicketCommands, "AssignTicket">,
@@ -14,7 +14,7 @@ export const Assignment = (): Policy<
   },
   on: {
     TicketOpened: ({ data }) => {
-      const agent = findAgent();
+      const agent = assignAgent(data.supportCategoryId, data.priority);
       return Promise.resolve(
         bind(
           "AssignTicket",

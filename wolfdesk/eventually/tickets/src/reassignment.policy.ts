@@ -1,5 +1,5 @@
 import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
-import { randomUUID } from "crypto";
+import { reassignAgent } from "./services/agent";
 import { Ticket } from "./ticket.aggregate";
 import { ReassignmentCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
@@ -30,17 +30,13 @@ export const Reassingment = (): Policy<
           (p) => expired.push(p.state)
         );
         for (const ticket of expired) {
-          const agentId = randomUUID();
-          const reassignAfter = new Date(Date.now() + 100000);
-          const escalateAfter = new Date(Date.now() + 100000);
+          const agent = await reassignAgent(ticket);
           await client().command(
             Ticket,
             "ReassignTicket",
             {
               ticketId: ticket.id,
-              agentId,
-              reassignAfter,
-              escalateAfter,
+              ...agent,
             },
             {
               id: ticket.id,
