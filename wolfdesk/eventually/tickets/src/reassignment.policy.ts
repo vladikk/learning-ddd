@@ -4,6 +4,9 @@ import { Ticket } from "./ticket.aggregate";
 import { ReassignmentCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
+import { rescheduleCronEvent } from "./utils";
+
+const BATCH_SIZE = 10;
 
 export const Reassingment = (): Policy<
   Pick<types.TicketCommands, "ReassignTicket">,
@@ -25,7 +28,7 @@ export const Reassingment = (): Policy<
             where: {
               reassignAfter: { operator: Operator.lt, value: new Date() },
             },
-            limit: 10,
+            limit: BATCH_SIZE,
           },
           (p) => expired.push(p.state)
         );
@@ -43,6 +46,8 @@ export const Reassingment = (): Policy<
             }
           );
         }
+        expired.length === BATCH_SIZE &&
+          rescheduleCronEvent(Reassingment, "ReassignmentCronTriggered", 10);
       });
       return Promise.resolve(undefined);
     },

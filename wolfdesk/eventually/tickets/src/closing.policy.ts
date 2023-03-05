@@ -3,8 +3,10 @@ import { Ticket } from "./ticket.aggregate";
 import { CheckInactiveTicketsCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
+import { rescheduleCronEvent } from "./utils";
 
 export const CLOSING_ID = "00000000-0000-1000-0000-200000000000";
+const BATCH_SIZE = 10;
 
 export const Closing = (): Policy<
   Pick<types.TicketCommands, "CloseTicket">,
@@ -26,7 +28,7 @@ export const Closing = (): Policy<
             where: {
               closeAfter: { operator: Operator.lt, value: new Date() },
             },
-            limit: 10,
+            limit: BATCH_SIZE,
           },
           (p) => expired.push(p.state)
         );
@@ -43,6 +45,8 @@ export const Closing = (): Policy<
             }
           );
         }
+        expired.length === BATCH_SIZE &&
+          rescheduleCronEvent(Closing, "CheckInactiveTicketsCronTriggered", 10);
       });
       return Promise.resolve(undefined);
     },

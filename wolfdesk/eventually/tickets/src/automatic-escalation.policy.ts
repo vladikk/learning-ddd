@@ -4,8 +4,10 @@ import { Ticket } from "./ticket.aggregate";
 import { EscalationCronTriggered } from "./ticket.event.schemas";
 import { TicketProjection, Tickets } from "./ticket.projector";
 import * as types from "./types";
+import { rescheduleCronEvent } from "./utils";
 
 export const AUTO_ESCALATION_ID = "00000000-0000-1000-0000-100000000000";
+const BATCH_SIZE = 10;
 
 export const AutomaticEscalation = (): Policy<
   Pick<types.TicketCommands, "EscalateTicket">,
@@ -27,7 +29,7 @@ export const AutomaticEscalation = (): Policy<
             where: {
               escalateAfter: { operator: Operator.lt, value: new Date() },
             },
-            limit: 10,
+            limit: BATCH_SIZE,
           },
           (p) => expired.push(p.state)
         );
@@ -45,12 +47,12 @@ export const AutomaticEscalation = (): Policy<
             }
           );
         }
-        // TODO: if batch size == MAX, can raise event recursively
-        // if (expired.length == 100)
-        //   await client().event(AutomaticEscalation, {
-        //     name: "EscalationCronTriggered",
-        //     data: {},
-        //   });
+        expired.length === BATCH_SIZE &&
+          rescheduleCronEvent(
+            AutomaticEscalation,
+            "EscalationCronTriggered",
+            10
+          );
       });
       return Promise.resolve(undefined);
     },
