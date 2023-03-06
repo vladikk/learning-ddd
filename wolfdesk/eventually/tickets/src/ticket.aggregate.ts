@@ -111,6 +111,7 @@ export const Ticket = (
         throw new errors.TicketIsClosedError(state.ticketId);
 
       // TODO: invariants
+      // only if ticket has not been escalated before?
 
       return Promise.resolve([
         bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
@@ -123,6 +124,7 @@ export const Ticket = (
         throw new errors.TicketIsClosedError(state.ticketId);
 
       // TODO: invariants
+      // is escalated and remaining time pct < .5 and no message acknowledged by agent
 
       return Promise.resolve([bind("TicketReassigned", { ...data })]);
     },
