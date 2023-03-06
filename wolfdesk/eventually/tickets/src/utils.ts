@@ -17,6 +17,6 @@ export const rescheduleCronEvent = <E extends Messages>(
         name,
         data: {} as Readonly<E[keyof E & string]>,
       } as CommittedEvent<E>),
-    delaySecs
+    delaySecs * 1000
   );
 };
