@@ -83,7 +83,10 @@ export const Ticket = (
         throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
         throw new errors.TicketIsClosedError(state.ticketId);
-      // TODO: check if data.from/data.to match this ticket
+
+      // TODO: invariants
+      // only owners or agents can add new messages
+
       return Promise.resolve([
         bind("MessageAdded", { ...data, messageId: randomUUID() }),
       ]);
@@ -93,7 +96,10 @@ export const Ticket = (
         throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
         throw new errors.TicketIsClosedError(state.ticketId);
-      // TODO: check other request escalation invariants
+
+      // TODO: invariants
+      // escalation can only be requested by owner after window expired
+
       return Promise.resolve([
         bind("TicketEscalationRequested", { ...data, requestId: randomUUID() }),
       ]);
@@ -103,7 +109,10 @@ export const Ticket = (
         throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
         throw new errors.TicketIsClosedError(state.ticketId);
-      // TODO: check other escalation invariants
+
+      // TODO: invariants
+      // only if ticket has not been escalated before?
+
       return Promise.resolve([
         bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
       ]);
@@ -113,7 +122,10 @@ export const Ticket = (
         throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
         throw new errors.TicketIsClosedError(state.ticketId);
-      // TODO: check other reassignment invariants
+
+      // TODO: invariants
+      // is escalated and remaining time pct < .5 and no message acknowledged by agent
+
       return Promise.resolve([bind("TicketReassigned", { ...data })]);
     },
     MarkMessageDelivered: (data, state) => {
@@ -132,6 +144,10 @@ export const Ticket = (
         throw new errors.TicketIsClosedError(state.ticketId);
       if (!state.messages[data.messageId])
         throw new errors.MessageNotFoundError(data.messageId);
+
+      // TODO: invariants
+      // message can only be acknowledged by receiver?
+
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
     MarkTicketResolved: (data, state) => {
@@ -139,7 +155,10 @@ export const Ticket = (
         throw new errors.TicketIsNotOpenError(state.ticketId);
       if (state.closedById)
         throw new errors.TicketIsClosedError(state.ticketId);
-      // TODO: check other resolve invariants
+
+      // TODO: invariants
+      // ticket can only be resolved by agent or owner?
+
       return Promise.resolve([bind("TicketResolved", { ...data })]);
     },
   },

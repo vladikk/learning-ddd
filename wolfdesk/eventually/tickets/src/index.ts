@@ -1,11 +1,14 @@
-import { app, bootstrap, store } from "@rotorsoft/eventually";
+import { app, bootstrap, Scope, store } from "@rotorsoft/eventually";
 import { ExpressApp } from "@rotorsoft/eventually-express";
 import {
   PostgresProjectorStore,
   PostgresStore,
 } from "@rotorsoft/eventually-pg";
 import { Assignment } from "./assignment.policy";
+import { AutomaticEscalation } from "./automatic-escalation.policy";
+import { Closing } from "./closing.policy";
 import { Delivery } from "./delivery.policy";
+import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
 import { Ticket } from "./ticket.aggregate";
 import { TicketProjection, Tickets } from "./ticket.projector";
@@ -20,13 +23,20 @@ bootstrap(async () => {
       id: 'varchar(100) COLLATE pg_catalog."default" NOT NULL PRIMARY KEY',
       productId: 'varchar(100) COLLATE pg_catalog."default"',
       supportCategoryId: 'varchar(100) COLLATE pg_catalog."default"',
+      escalationId: 'varchar(100) COLLATE pg_catalog."default"',
+
       priority: 'varchar(10) COLLATE pg_catalog."default"',
       title: 'varchar(100) COLLATE pg_catalog."default"',
       messages: "integer",
+
       userId: 'varchar(100) COLLATE pg_catalog."default"',
       agentId: 'varchar(100) COLLATE pg_catalog."default"',
-      escalationId: 'varchar(100) COLLATE pg_catalog."default"',
+      resolvedById: 'varchar(100) COLLATE pg_catalog."default"',
       closedById: 'varchar(100) COLLATE pg_catalog."default"',
+
+      reassignAfter: "timestamptz",
+      escalateAfter: "timestamptz",
+      closeAfter: "timestamptz",
     },
     `
     CREATE INDEX IF NOT EXISTS tickets_user_ix ON public.tickets_projection USING btree ("userId" ASC) TABLESPACE pg_default;
@@ -38,8 +48,11 @@ bootstrap(async () => {
   app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
+    .with(Reassingment, { scope: Scope.public })
     .with(Delivery)
     .with(RequestedEscalation)
+    .with(AutomaticEscalation, { scope: Scope.public })
+    .with(Closing, { scope: Scope.public })
     .with(Tickets)
     .withStore(Tickets, pgTicketProjectorStore)
     .build();

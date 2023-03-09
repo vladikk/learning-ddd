@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "npx ts-node-dev --respawn ./src/index.ts",
-    "test": "npx tsc && jest ./src",
+    "test": "npx tsc && jest",
     "build": "tsc"
   },
   "keywords": [],
@@ -15,9 +15,9 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@rotorsoft/eventually": "^5.0.9",
-    "@rotorsoft/eventually-express": "^5.0.9",
-    "@rotorsoft/eventually-pg": "^5.0.5",
+    "@rotorsoft/eventually": "^5.0",
+    "@rotorsoft/eventually-express": "^5.0",
+    "@rotorsoft/eventually-pg": "^5.0",
     "zod": "^3.20.6"
   },
   "devDependencies": {

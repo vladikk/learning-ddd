@@ -1,6 +1,7 @@
 import { bind, Policy } from "@rotorsoft/eventually";
 import * as types from "./types";
 import { MessageAdded } from "./ticket.event.schemas";
+import { deliverMessage } from "./services/notification";
 
 export const Delivery = (): Policy<
   Pick<types.TicketCommands, "MarkMessageDelivered">,
@@ -12,8 +13,8 @@ export const Delivery = (): Policy<
     commands: { MarkMessageDelivered: "Marks message as delivered" },
   },
   on: {
-    MessageAdded: ({ data }) => {
-      // TODO: deliver message to user - notifications system?
+    MessageAdded: async ({ data }) => {
+      await deliverMessage(data);
       return Promise.resolve(
         bind(
           "MarkMessageDelivered",

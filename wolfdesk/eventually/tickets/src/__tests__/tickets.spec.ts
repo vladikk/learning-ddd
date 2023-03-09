@@ -44,6 +44,9 @@ describe("tickets projector", () => {
       expect(state.closedById).toBeDefined();
       expect(state.resolvedById).toBeDefined();
       expect(state.escalationId).toBeDefined();
+      expect(state.closeAfter).toBeDefined();
+      expect(state.escalateAfter).toBeDefined();
+      expect(state.reassignAfter).toBeDefined();
       records.push(state);
     });
     expect(count).toBe(1);

@@ -12,8 +12,7 @@ export const RequestedEscalation = (): Policy<
     commands: { EscalateTicket: "Escalates ticket" },
   },
   on: {
-    TicketEscalationRequested: ({ data }) => {
-      // TODO: implement escalation request logic
+    TicketEscalationRequested: async ({ data }) => {
       return Promise.resolve(
         bind(
           "EscalateTicket",
