@@ -53,8 +53,7 @@ bootstrap(async () => {
     .with(RequestedEscalation)
     .with(AutomaticEscalation, { scope: Scope.public })
     .with(Closing, { scope: Scope.public })
-    .with(Tickets)
-    .withStore(Tickets, pgTicketProjectorStore)
+    .with(Tickets, { store: pgTicketProjectorStore })
     .build();
   await app().listen();
 });
