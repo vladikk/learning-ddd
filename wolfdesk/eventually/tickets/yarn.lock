@@ -570,9 +570,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.0.14"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.0.14.tgz#57458697ca86a71e375ebb44cc0cbb889f7074a5"
-  integrity sha512-281TR1dnrrY3eJ0v+J5Nd6bG8wTy3paI38R+NqJDSEc2Gd3nmRTSDvhLBGFtYpqAEeJRxa52dCTN5dQoaqHgGA==
+  version "5.0.15"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.0.15.tgz#9c69fed7b76f6cbd76abe48763cfb7a2879799f5"
+  integrity sha512-dGTxUrzUuCpMptC6GKLpYRjMSJShTcoeqjj/Ma07uPDSWk8aI0hdT+FwnoGrjhRpjre0SJQZ4wMjOm5BDvN+UA==
   dependencies:
     "@anatine/zod-openapi" "^1.12.0"
     "@rotorsoft/eventually" "^5"
@@ -703,9 +703,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@^29.4.0":
-  version "29.4.1"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.4.1.tgz#d76cbd07e5a24c0f4e86c2c0f9ed9e4ed33af3c8"
-  integrity sha512-zDQSWXG+ZkEvs2zFFMszePhx4euKz+Yt3Gg1P+RHjfJBinTTr6L2DEyovO4V/WrKXuF0Dgn56GWGZPDa6TW9eQ==
+  version "29.4.2"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.4.2.tgz#13ca45d528a0f81a4792b7df199f58ad46c2a0e3"
+  integrity sha512-bbne90W7is+m88ezmZrLiTpp41tIoTdvPC5t3gLoNgu/6qbGdWTC2JWqPWQRJn2Q7rVYTr8aTWqOjhGJDXyvAQ==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
