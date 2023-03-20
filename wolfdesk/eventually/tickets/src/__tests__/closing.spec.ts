@@ -1,4 +1,4 @@
-import { app, client, dispose, sleep } from "@rotorsoft/eventually";
+import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import { openTicket } from "./commands";
@@ -29,6 +29,8 @@ describe("closing policy", () => {
       Priority.High,
       new Date()
     );
+    await broker().drain();
+
     await client().event(Closing, {
       name: "CheckInactiveTicketsCronTriggered",
       data: {},
@@ -38,7 +40,8 @@ describe("closing policy", () => {
       created: new Date(),
       metadata: { correlation: "", causation: {} },
     });
-    await sleep(1000);
+    await broker().drain();
+
     const snapshot = await client().load(Ticket, ticketId);
     expect(snapshot.state.closedById).toBeDefined();
   });

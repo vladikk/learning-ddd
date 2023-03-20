@@ -1,4 +1,4 @@
-import { app, client, dispose, State } from "@rotorsoft/eventually";
+import { app, broker, client, dispose, State } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import {
@@ -33,6 +33,7 @@ describe("tickets projector", () => {
     await reassignTicket(ticketId);
     await markTicketResolved(ticketId);
     await closeTicket(ticketId);
+    await broker().drain();
 
     const records: Array<State> = [];
     const count = await client().read(Tickets, ticketId, ({ state }) => {

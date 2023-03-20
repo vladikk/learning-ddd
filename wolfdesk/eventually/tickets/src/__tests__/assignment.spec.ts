@@ -1,4 +1,4 @@
-import { app, client, dispose } from "@rotorsoft/eventually";
+import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import { openTicket } from "./commands";
@@ -18,6 +18,8 @@ describe("assignment policy", () => {
   it("should assign agent to new ticket", async () => {
     const ticketId = chance.guid();
     await openTicket(ticketId, "assign me", "Opening a new ticket");
+    await broker().drain();
+
     const snapshot = await client().load(Ticket, ticketId, false);
     expect(snapshot.state.agentId).toBeDefined();
   });

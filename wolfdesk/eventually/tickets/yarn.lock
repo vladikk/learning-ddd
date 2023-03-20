@@ -570,9 +570,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.0.16"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.0.16.tgz#ae70ae277f8ab71e2f82e09487092c5064c7a63d"
-  integrity sha512-/eiUKH1DP/eMQUDtMhhHKHOwhNXHuEnUC6aeg+GEdg//PVrcrrZwR+gb6TJdklbB6bSaBw9ydrfdYExZZHRV8Q==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.1.0.tgz#2ffa6afc654d89846da373caf0523ba00145b3d5"
+  integrity sha512-YR5+qB2q5qPE2tlO19QOK3X41fdR3h49eybr08bZdU2kbn7RkrkB0Aqlb/KW7X7MaxA+rdNbb9Y/IvWgDjOv4g==
   dependencies:
     "@anatine/zod-openapi" "^1.12.0"
     "@rotorsoft/eventually" "^5"
@@ -582,18 +582,18 @@
     zod "^3.21.4"
 
 "@rotorsoft/eventually-pg@^5.0":
-  version "5.0.9"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-pg/-/eventually-pg-5.0.9.tgz#bb68c13b5a82fb35d6b82f76a0e35718346aa412"
-  integrity sha512-wdDPa5XEsCSNY40oLqk3jxE6OXN+ifK3UkLCaWihC3tTwL/10ioT0sEBTG4/xBOLEEaidWae6PpHRgC597ys7w==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-pg/-/eventually-pg-5.1.0.tgz#f0c6f7f1befe8e1e2423730fa03f7b38b03dc281"
+  integrity sha512-R/dJYg//Ur+R7G3c/0s53gzd5Xhw4rW4kdObsRk+g8P2FX4SwR+igW/dNmABb04x2+7+giYqvA/CJYjdb0ul/g==
   dependencies:
     "@rotorsoft/eventually" "^5"
     pg "^8.10.0"
     zod "^3.21.4"
 
 "@rotorsoft/eventually@^5", "@rotorsoft/eventually@^5.0":
-  version "5.0.14"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.0.14.tgz#28d35ef2749a52293ae5b1d086ac219234a27bef"
-  integrity sha512-4Eund5O+7gpPThhdkVU1thcfuvVRV4gxL/qYrpXVMgzLJCwAAYzKVBYPutjYpQ15yJdVEzSv58fNSj1LpaJikg==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.1.0.tgz#9a3321ce52c5f25d61c1376c4970608356ef26b5"
+  integrity sha512-rRAQDtrtJx/VG95sijikwD2IwZroDnmtE1zTYrvNv0/2d5Io4SMq24bDjuZVPy7Q+I5TOSAvRJC/jVpV8q6qqA==
   dependencies:
     deepmerge "^4.3.0"
     dotenv "^16.0.3"
@@ -1185,10 +1185,15 @@ dedent@^0.7.0:
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
   integrity sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==
 
-deepmerge@^4.2.2, deepmerge@^4.3.0:
+deepmerge@^4.2.2:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.3.0.tgz#65491893ec47756d44719ae520e0e2609233b59b"
   integrity sha512-z2wJZXrmeHdvYJp/Ux55wIjqo81G5Bp4c+oELTW+7ar6SogWHajt5a9gO3s3IDaGSAXjDk0vlQKN3rms8ab3og==
+
+deepmerge@^4.3.0:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.3.1.tgz#44b5f2147cd3b00d4b56137685966f26fd25dd4a"
+  integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
 
 delayed-stream@~1.0.0:
   version "1.0.0"
