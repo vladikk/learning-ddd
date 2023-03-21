@@ -1,13 +1,45 @@
 <div class="border rounded m-3 p-3">
+  <div class="border rounded m-3 p-3">
+    <div class="row">
+      <div class="form-group col-md-8">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" placeholder="Title"/>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="number">Priority</label>
+        <select class="form-control" id="priority">
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-12">
+        <label for="message">Message</label>
+        <input type="text" class="form-control" id="message" placeholder="Message"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-4 p-3">
+        <button class="btn btn-primary" id="open">Open</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-12 p-3" id="result">
+      </div>
+    </div>
+  </div>
+
   <table id="tickets" class="table align-middle">
     <thead>
       <tr>
         <th scope="col">Ticket</th>
         <th scope="col">Priority</th>
         <th scope="col">Title</th>
+        <th scope="col">AgentId</th>
+        <th scope="col">ResolvedById</th>
         <th scope="col" class="text-end">Messages</th>
-        <th scope="col" class="text-end">AgentId</th>
-        <th scope="col" class="text-end">ResolvedById</th>
       </tr>
     </thead>
     <tbody>
@@ -16,32 +48,85 @@
 </div>
 
 <script>
-  let tickets;
+  const command = (name, id, body) => {
+    const result = document.getElementById("result");
+    result.innerText = "";
 
-  const render = (state) => {
-    if(!tickets) return;
+    fetch(`/ticket/${id}/${name}`, {
+      method: "post",
+      body: JSON.stringify(body),
+      headers: { 'Content-type': 'application/json;charset=UTF-8' }
+    })
+    .then((response) => response.json())
+    .then((json) => { result.innerText = json.message; })
+    .catch((error) => { result.innerText = error.message; })
+  }
 
-    const found = tickets.rows.namedItem(state.id);
-    if(found) tickets.deleteRow(found.rowIndex);
+  const openTicket = (title, priority, message) => {
+    const id = crypto.randomUUID();
+    const body = {
+      productId: crypto.randomUUID(),
+      supportCategoryId: crypto.randomUUID(),
+      priority,
+      userId: crypto.randomUUID(),
+      title,
+      message
+    };
+    command("open-ticket", id, body);
+  }
 
-    const row = tickets.insertRow(1);
-    row.id = state.id;
-    row.insertCell().appendChild(document.createTextNode(state.id));
-    row.insertCell().appendChild(document.createTextNode(state.priority));
-    row.insertCell().appendChild(document.createTextNode(state.title));
-    row.insertCell().appendChild(document.createTextNode(state.messages));
-    row.insertCell().appendChild(document.createTextNode(state.agentId));
-    row.insertCell().appendChild(document.createTextNode(state.resolvedById));
-  };
+  const addMessage = (id, message) => {
+    command("add-message", id, {
+      from: crypto.randomUUID(),
+      to: crypto.randomUUID(),
+      body: message,
+      attachments: {}
+    });
+  }
 
-  const watcher = new EventSource("/ticket-watch");
-  watcher.addEventListener("ticket", ({ data }) => {
-    const state = JSON.parse(data);
-    console.log(state);
-    render(state);
-  });
+  const markTicketResolved = (id) => {
+    command("mark-ticket-resolved", id, {
+      resolvedById: crypto.randomUUID()
+    });
+  }
+  
+  const fields = ["id", "priority", "title", "agentId", "resolvedById", "messages"];
 
   document.addEventListener("DOMContentLoaded", function () { 
-    tickets = document.getElementById("tickets"); 
+    const tickets = document.getElementById("tickets"); 
+    const priority = document.getElementById("priority");
+    const title = document.getElementById("title");
+    const message = document.getElementById("message");
+    const open = document.getElementById("open");
+
+    open.onclick = () => openTicket(title.value, priority.value, message.value);
+
+    const render = (state) => {
+      const found = tickets.rows.namedItem(state.id);
+      if(found) tickets.deleteRow(found.rowIndex);
+
+      const row = tickets.insertRow(1);
+      row.id = state.id;
+      fields.forEach(f => row.insertCell().appendChild(document.createTextNode(state[f])));
+
+      const ticketId = state.id.substring("Ticket-".length);
+
+      if(!state.resolvedById) {
+        const resolve = document.createElement("button");
+        resolve.innerText = "Resolve";
+        resolve.onclick = () => markTicketResolved(ticketId);
+        row.insertCell().appendChild(resolve);
+
+        const add = document.createElement("button");
+        add.innerText = "Add Message";
+        add.onclick = () => addMessage(ticketId, message.value);
+        row.insertCell().appendChild(add);
+      }
+    };
+
+    const watcher = new EventSource("/ticket-watch");
+    watcher.addEventListener("ticket", ({ data }) => {
+      render(JSON.parse(data));
+    });
   });
 </script>

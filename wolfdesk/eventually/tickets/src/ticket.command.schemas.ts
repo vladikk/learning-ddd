@@ -9,7 +9,7 @@ export const OpenTicket = z
     userId: z.string().uuid(),
     title: z.string().min(1),
     message: z.string().min(1),
-    closeAfter: z.date(),
+    closeAfter: z.date().optional(),
   })
   .describe("Opens a new ticket");
 
