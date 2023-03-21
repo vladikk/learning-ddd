@@ -1,0 +1,47 @@
+<div class="border rounded m-3 p-3">
+  <table id="tickets" class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">Ticket</th>
+        <th scope="col">Priority</th>
+        <th scope="col">Title</th>
+        <th scope="col" class="text-end">Messages</th>
+        <th scope="col" class="text-end">AgentId</th>
+        <th scope="col" class="text-end">ResolvedById</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let tickets;
+
+  const render = (state) => {
+    if(!tickets) return;
+
+    const found = tickets.rows.namedItem(state.id);
+    if(found) tickets.deleteRow(found.rowIndex);
+
+    const row = tickets.insertRow(1);
+    row.id = state.id;
+    row.insertCell().appendChild(document.createTextNode(state.id));
+    row.insertCell().appendChild(document.createTextNode(state.priority));
+    row.insertCell().appendChild(document.createTextNode(state.title));
+    row.insertCell().appendChild(document.createTextNode(state.messages));
+    row.insertCell().appendChild(document.createTextNode(state.agentId));
+    row.insertCell().appendChild(document.createTextNode(state.resolvedById));
+  };
+
+  const watcher = new EventSource("/ticket-watch");
+  watcher.addEventListener("ticket", ({ data }) => {
+    const state = JSON.parse(data);
+    console.log(state);
+    render(state);
+  });
+
+  document.addEventListener("DOMContentLoaded", function () { 
+    tickets = document.getElementById("tickets"); 
+  });
+</script>

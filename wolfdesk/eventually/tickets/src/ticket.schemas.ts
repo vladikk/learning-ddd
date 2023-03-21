@@ -21,7 +21,6 @@ export const Message = z.object({
 });
 
 export const Ticket = z.object({
-  ticketId: z.string().uuid(),
   productId: z.string().uuid(),
   supportCategoryId: z.string().uuid(),
   priority: z.nativeEnum(Priority),

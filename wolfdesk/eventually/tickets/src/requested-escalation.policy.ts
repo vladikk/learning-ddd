@@ -12,17 +12,16 @@ export const RequestedEscalation = (): Policy<
     commands: { EscalateTicket: "Escalates ticket" },
   },
   on: {
-    TicketEscalationRequested: async ({ data }) => {
+    TicketEscalationRequested: async ({ stream, data }) => {
       return Promise.resolve(
         bind(
           "EscalateTicket",
           {
-            ticketId: data.ticketId,
             requestId: data.requestId,
             requestedById: data.requestedById,
           },
           {
-            id: data.ticketId,
+            id: stream.substring("Ticket-".length),
           }
         )
       );

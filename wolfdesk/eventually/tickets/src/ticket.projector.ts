@@ -38,12 +38,12 @@ export const Tickets = (): Projector<
     events: schemas.events,
   },
   on: {
-    TicketOpened: ({ data }) => {
-      const { ticketId, message, messageId, ...other } = data;
+    TicketOpened: ({ stream, data }) => {
+      const { message, messageId, ...other } = data;
       return Promise.resolve({
         upserts: [
           {
-            where: { id: ticketId },
+            where: { id: stream },
             values: {
               ...other,
               messages: 1,
@@ -52,11 +52,11 @@ export const Tickets = (): Projector<
         ],
       });
     },
-    TicketClosed: ({ data }) => {
+    TicketClosed: ({ stream, data }) => {
       return Promise.resolve({
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               closedById: data.closedById,
             },
@@ -64,11 +64,11 @@ export const Tickets = (): Projector<
         ],
       });
     },
-    TicketAssigned: ({ data }) => {
+    TicketAssigned: ({ stream, data }) => {
       return Promise.resolve({
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               agentId: data.agentId,
               escalateAfter: data.escalateAfter,
@@ -78,15 +78,15 @@ export const Tickets = (): Projector<
         ],
       });
     },
-    MessageAdded: async ({ data }) => {
+    MessageAdded: async ({ stream, data }) => {
       let messages = 0;
-      await client().read(Tickets, data.ticketId, (r) => {
+      await client().read(Tickets, stream, (r) => {
         messages = r.state.messages;
       });
       return {
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               messages: messages + 1,
             },
@@ -94,11 +94,11 @@ export const Tickets = (): Projector<
         ],
       };
     },
-    TicketEscalated: ({ data }) => {
+    TicketEscalated: ({ stream, data }) => {
       return Promise.resolve({
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               escalationId: data.escalationId,
             },
@@ -106,11 +106,11 @@ export const Tickets = (): Projector<
         ],
       });
     },
-    TicketReassigned: ({ data }) => {
+    TicketReassigned: ({ stream, data }) => {
       return Promise.resolve({
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               agentId: data.agentId,
               escalateAfter: data.escalateAfter,
@@ -120,11 +120,11 @@ export const Tickets = (): Projector<
         ],
       });
     },
-    TicketResolved: ({ data }) => {
+    TicketResolved: ({ stream, data }) => {
       return Promise.resolve({
         upserts: [
           {
-            where: { id: data.ticketId },
+            where: { id: stream },
             values: {
               resolvedById: data.resolvedById,
             },

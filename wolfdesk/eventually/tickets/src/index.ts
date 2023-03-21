@@ -1,5 +1,5 @@
-import { app, bootstrap, Scope, store } from "@rotorsoft/eventually";
-import { ExpressApp } from "@rotorsoft/eventually-express";
+import { app, bootstrap, client, Scope, store } from "@rotorsoft/eventually";
+import { ExpressApp, sse } from "@rotorsoft/eventually-express";
 import {
   PostgresProjectorStore,
   PostgresStore,
@@ -12,6 +12,8 @@ import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
 import { Ticket } from "./ticket.aggregate";
 import { TicketProjection, Tickets } from "./ticket.projector";
+import { engine } from "express-handlebars";
+import path from "node:path";
 
 bootstrap(async () => {
   await store(PostgresStore("tickets"));
@@ -45,7 +47,7 @@ bootstrap(async () => {
   );
   await pgTicketProjectorStore.seed();
 
-  app(new ExpressApp())
+  const express = app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
     .with(Reassingment, { scope: Scope.public })
@@ -55,5 +57,37 @@ bootstrap(async () => {
     .with(Closing, { scope: Scope.public })
     .with(Tickets, { store: pgTicketProjectorStore })
     .build();
+
+  //-------------------------------------------------------------------------------------------------------------------
+  //-- A little .hbs playground to watch ticket projections in real time
+  //-- For demo purposes only - this is not really scalable!
+  //-------------------------------------------------------------------------------------------------------------------
+  express.engine(
+    "hbs",
+    engine({
+      extname: ".hbs",
+    })
+  );
+  express.set("view engine", "hbs");
+  express.set("views", path.resolve(__dirname, "./views"));
+  express.get("/playground", (_, res) => {
+    res.render("playground");
+  });
+
+  const watching = sse<TicketProjection>("ticket");
+  express.get("/ticket-watch", (req, res) => {
+    watching.push(req, res);
+  });
+
+  app().on("projection", async ({ factory, results }) => {
+    console.log(factory.name, results);
+    const id = results.upserted.at(0)?.where.id;
+    id &&
+      (await client().read(Tickets, id, (ticket) =>
+        watching.send(ticket.state)
+      ));
+  });
+  //-------------------------------------------------------------------------------------------------------------------
+
   await app().listen();
 });

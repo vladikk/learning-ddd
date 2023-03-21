@@ -37,11 +37,10 @@ export const Closing = (): Policy<
             Ticket,
             "CloseTicket",
             {
-              ticketId: ticket.id,
               closedById: CLOSING_ID,
             },
             {
-              id: ticket.id,
+              id: ticket.id.substring("Ticket-".length),
             }
           );
         }

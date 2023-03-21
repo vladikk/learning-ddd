@@ -13,16 +13,12 @@ export const Assignment = (): Policy<
     commands: { AssignTicket: "Assigns agent to open ticket" },
   },
   on: {
-    TicketOpened: ({ data }) => {
+    TicketOpened: ({ stream, data }) => {
       const agent = assignAgent(data.supportCategoryId, data.priority);
       return Promise.resolve(
-        bind(
-          "AssignTicket",
-          { ticketId: data.ticketId, ...agent },
-          {
-            id: data.ticketId,
-          }
-        )
+        bind("AssignTicket", agent, {
+          id: stream.substring("Ticket-".length),
+        })
       );
     },
   },

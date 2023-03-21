@@ -11,7 +11,6 @@ export const Ticket = (
   stream: () => `Ticket-${id}`,
   schemas: types.schemas,
   init: () => ({
-    ticketId: "",
     productId: "",
     supportCategoryId: "",
     priority: Priority.Low,
@@ -58,44 +57,41 @@ export const Ticket = (
   // commands handlers
   on: {
     OpenTicket: (data, state) => {
-      if (state.ticketId)
-        throw new errors.TicketCannotOpenTwiceError(state.ticketId);
+      if (state.productId) throw new errors.TicketCannotOpenTwiceError(id);
       return Promise.resolve([
-        bind("TicketOpened", { ...data, messageId: randomUUID() }),
+        bind("TicketOpened", {
+          ...data,
+          messageId: randomUUID(),
+        }),
       ]);
     },
     CloseTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketCannotCloseTwiceError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketCannotCloseTwiceError(id);
       return Promise.resolve([bind("TicketClosed", data)]);
     },
     AssignTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
       return Promise.resolve([bind("TicketAssigned", data)]);
     },
     AddMessage: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
 
       // TODO: invariants
       // only owners or agents can add new messages
 
       return Promise.resolve([
-        bind("MessageAdded", { ...data, messageId: randomUUID() }),
+        bind("MessageAdded", {
+          ...data,
+          messageId: randomUUID(),
+        }),
       ]);
     },
     RequestTicketEscalation: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
 
       // TODO: invariants
       // escalation can only be requested by owner after window expired
@@ -105,10 +101,8 @@ export const Ticket = (
       ]);
     },
     EscalateTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
 
       // TODO: invariants
       // only if ticket has not been escalated before?
@@ -118,10 +112,8 @@ export const Ticket = (
       ]);
     },
     ReassignTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
 
       // TODO: invariants
       // is escalated and remaining time pct < .5 and no message acknowledged by agent
@@ -129,19 +121,15 @@ export const Ticket = (
       return Promise.resolve([bind("TicketReassigned", { ...data })]);
     },
     MarkMessageDelivered: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
       if (!state.messages[data.messageId])
         throw new errors.MessageNotFoundError(data.messageId);
       return Promise.resolve([bind("MessageDelivered", { ...data })]);
     },
     AcknowledgeMessage: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
       if (!state.messages[data.messageId])
         throw new errors.MessageNotFoundError(data.messageId);
 
@@ -151,10 +139,8 @@ export const Ticket = (
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
     MarkTicketResolved: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+      if (!state.productId) throw new errors.TicketIsNotOpenError(id);
+      if (state.closedById) throw new errors.TicketIsClosedError(id);
 
       // TODO: invariants
       // ticket can only be resolved by agent or owner?

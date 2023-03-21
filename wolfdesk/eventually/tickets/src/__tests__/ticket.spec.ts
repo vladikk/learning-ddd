@@ -47,7 +47,6 @@ describe("ticket", () => {
     const snapshot = await client().load(Ticket, ticketId, false);
     const message = Object.values(snapshot.state.messages).at(0);
 
-    expect(snapshot.state.ticketId).toEqual(ticketId);
     expect(snapshot.state.title).toEqual(title);
     expect(snapshot.state.agentId).toEqual(agentId);
     expect(Object.keys(snapshot.state.messages).length).toBe(2);

@@ -20,7 +20,6 @@ export const openTicket = (
     Ticket,
     "OpenTicket",
     {
-      ticketId,
       productId,
       supportCategoryId,
       priority,
@@ -42,7 +41,6 @@ export const assignTicket = (
     Ticket,
     "AssignTicket",
     {
-      ticketId,
       agentId,
       escalateAfter,
       reassignAfter,
@@ -55,7 +53,6 @@ export const closeTicket = (ticketId: string, closedById = chance.guid()) =>
     Ticket,
     "CloseTicket",
     {
-      ticketId,
       closedById,
     },
     { id: ticketId }
@@ -71,7 +68,6 @@ export const addMessage = (
     Ticket,
     "AddMessage",
     {
-      ticketId,
       body,
       from,
       to,
@@ -87,7 +83,7 @@ export const requestTicketEscalation = (
   client().command(
     Ticket,
     "RequestTicketEscalation",
-    { ticketId, requestedById },
+    { requestedById },
     { id: ticketId }
   );
 
@@ -99,7 +95,7 @@ export const escalateTicket = (
   client().command(
     Ticket,
     "EscalateTicket",
-    { ticketId, requestId, requestedById },
+    { requestId, requestedById },
     { id: ticketId }
   );
 
@@ -112,7 +108,7 @@ export const reassignTicket = (
   client().command(
     Ticket,
     "ReassignTicket",
-    { ticketId, agentId, escalateAfter, reassignAfter },
+    { agentId, escalateAfter, reassignAfter },
     { id: ticketId }
   );
 
@@ -120,7 +116,7 @@ export const markMessageDelivered = (ticketId: string, messageId: string) =>
   client().command(
     Ticket,
     "MarkMessageDelivered",
-    { ticketId, messageId },
+    { messageId },
     { id: ticketId }
   );
 
@@ -128,7 +124,7 @@ export const acknowledgeMessage = (ticketId: string, messageId: string) =>
   client().command(
     Ticket,
     "AcknowledgeMessage",
-    { ticketId, messageId },
+    { messageId },
     { id: ticketId }
   );
 
@@ -139,6 +135,6 @@ export const markTicketResolved = (
   client().command(
     Ticket,
     "MarkTicketResolved",
-    { ticketId, resolvedById },
+    { resolvedById },
     { id: ticketId }
   );

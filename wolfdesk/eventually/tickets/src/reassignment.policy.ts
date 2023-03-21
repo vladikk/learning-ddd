@@ -34,17 +34,9 @@ export const Reassingment = (): Policy<
         );
         for (const ticket of expired) {
           const agent = await reassignAgent(ticket);
-          await client().command(
-            Ticket,
-            "ReassignTicket",
-            {
-              ticketId: ticket.id,
-              ...agent,
-            },
-            {
-              id: ticket.id,
-            }
-          );
+          await client().command(Ticket, "ReassignTicket", agent, {
+            id: ticket.id.substring("Ticket-".length),
+          });
         }
         expired.length === BATCH_SIZE &&
           rescheduleCronEvent(Reassingment, "ReassignmentCronTriggered", 10);

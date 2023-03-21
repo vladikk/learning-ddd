@@ -36,20 +36,24 @@ describe("tickets projector", () => {
     await broker().drain();
 
     const records: Array<State> = [];
-    const count = await client().read(Tickets, ticketId, ({ state }) => {
-      expect(state.id).toBe(ticketId);
-      expect(state.userId).toBeDefined();
-      expect(state.agentId).toBeDefined();
-      expect(state.title).toBe(title);
-      expect(state.messages).toBe(2);
-      expect(state.closedById).toBeDefined();
-      expect(state.resolvedById).toBeDefined();
-      expect(state.escalationId).toBeDefined();
-      expect(state.closeAfter).toBeDefined();
-      expect(state.escalateAfter).toBeDefined();
-      expect(state.reassignAfter).toBeDefined();
-      records.push(state);
-    });
+    const count = await client().read(
+      Tickets,
+      `Ticket-${ticketId}`,
+      ({ state }) => {
+        expect(state.id).toBe(`Ticket-${ticketId}`);
+        expect(state.userId).toBeDefined();
+        expect(state.agentId).toBeDefined();
+        expect(state.title).toBe(title);
+        expect(state.messages).toBe(2);
+        expect(state.closedById).toBeDefined();
+        expect(state.resolvedById).toBeDefined();
+        expect(state.escalationId).toBeDefined();
+        expect(state.closeAfter).toBeDefined();
+        expect(state.escalateAfter).toBeDefined();
+        expect(state.reassignAfter).toBeDefined();
+        records.push(state);
+      }
+    );
     expect(count).toBe(1);
     // just to check projection while preparing test
     console.table(records);
