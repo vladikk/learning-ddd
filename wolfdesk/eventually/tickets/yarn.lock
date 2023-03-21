@@ -570,9 +570,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.1.1.tgz#74445a386da1133e7b27c1c488ba6cac922783d0"
-  integrity sha512-F7zk+QCdtCIiNMgi5OIjU0+PsmeytawDlGOOd5DCBQqMH0rqDsPCXb/X7F3OfzjZbYE4gLm9V2Ho8Vs/jUVyxw==
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.1.2.tgz#da4e572d8c2ce2f33c9bc65a1059cb916d930834"
+  integrity sha512-aakVsI5nZKDgxNyjOtXYDXSibcnlt39i3lPrBbZhtLS7iYrwFMlmYPuLIV10wzUQ/X8Hps8fivnw5S0gxccC2A==
   dependencies:
     "@anatine/zod-openapi" "^1.12.0"
     "@rotorsoft/eventually" "^5"
@@ -582,18 +582,18 @@
     zod "^3.21.4"
 
 "@rotorsoft/eventually-pg@^5.0":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-pg/-/eventually-pg-5.1.1.tgz#63be04aad239c894db1da281cdffd10e6f2fe64e"
-  integrity sha512-8g41+E4fKBZ+tUdpbDJmkddpCyQorJp+s7RrqPj1pTZDTsXLpaQyYT/EAXbyFZl3+oDu5djk5ROgPY50v3fkHg==
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-pg/-/eventually-pg-5.1.2.tgz#fca24bc96d6fcaf1a34c961ebbd95e6f4e36caf2"
+  integrity sha512-gkCO7K2tNbDc6dEun+jQLa5TUcKGroLgzmOiEY45iWtC4CKCnuDIXbBN22pXmm1+a6wJ9ad8kHd0BCgXepFDcg==
   dependencies:
     "@rotorsoft/eventually" "^5"
     pg "^8.10.0"
     zod "^3.21.4"
 
 "@rotorsoft/eventually@^5", "@rotorsoft/eventually@^5.0":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.1.1.tgz#ef53610dd7b4bd2ced346bdfcde88da200036854"
-  integrity sha512-tbzlp5d0kxtBcPD9qoAQ3QNx/MW6gsiVb6KNpRHaqGrJdzQustybS627y+n9PLXE3PO7OCXyc3pyjwAZyqVh2g==
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.1.2.tgz#3445d33aeeda5e0bb3b4a010047bdc47820fe03b"
+  integrity sha512-MxSfBy0Y1sz4tY9qD0MHSn4AgMNNQeqdxNVYyo6EVa70o9W6hzAFtDiCX04fUEATNIcIWaDL0aPrEMYrTPigow==
   dependencies:
     deepmerge "^4.3.0"
     dotenv "^16.0.3"
