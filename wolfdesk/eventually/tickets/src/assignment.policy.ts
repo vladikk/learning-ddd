@@ -15,11 +15,7 @@ export const Assignment = (): Policy<
   on: {
     TicketOpened: ({ stream, data }) => {
       const agent = assignAgent(data.supportCategoryId, data.priority);
-      return Promise.resolve(
-        bind("AssignTicket", agent, {
-          id: stream.substring("Ticket-".length),
-        })
-      );
+      return Promise.resolve(bind("AssignTicket", agent, { stream }));
     },
   },
 });

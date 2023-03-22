@@ -28,7 +28,7 @@ export const openTicket = (
       message,
       closeAfter,
     },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const assignTicket = (
@@ -45,7 +45,7 @@ export const assignTicket = (
       escalateAfter,
       reassignAfter,
     },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const closeTicket = (ticketId: string, closedById = chance.guid()) =>
@@ -55,7 +55,7 @@ export const closeTicket = (ticketId: string, closedById = chance.guid()) =>
     {
       closedById,
     },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const addMessage = (
@@ -73,7 +73,7 @@ export const addMessage = (
       to,
       attachments: {},
     },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const requestTicketEscalation = (
@@ -84,7 +84,7 @@ export const requestTicketEscalation = (
     Ticket,
     "RequestTicketEscalation",
     { requestedById },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const escalateTicket = (
@@ -96,7 +96,7 @@ export const escalateTicket = (
     Ticket,
     "EscalateTicket",
     { requestId, requestedById },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const reassignTicket = (
@@ -109,7 +109,7 @@ export const reassignTicket = (
     Ticket,
     "ReassignTicket",
     { agentId, escalateAfter, reassignAfter },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const markMessageDelivered = (ticketId: string, messageId: string) =>
@@ -117,7 +117,7 @@ export const markMessageDelivered = (ticketId: string, messageId: string) =>
     Ticket,
     "MarkMessageDelivered",
     { messageId },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const acknowledgeMessage = (ticketId: string, messageId: string) =>
@@ -125,7 +125,7 @@ export const acknowledgeMessage = (ticketId: string, messageId: string) =>
     Ticket,
     "AcknowledgeMessage",
     { messageId },
-    { id: ticketId }
+    { stream: ticketId }
   );
 
 export const markTicketResolved = (
@@ -136,5 +136,5 @@ export const markTicketResolved = (
     Ticket,
     "MarkTicketResolved",
     { resolvedById },
-    { id: ticketId }
+    { stream: ticketId }
   );

@@ -20,7 +20,7 @@ export const Delivery = (): Policy<
           "MarkMessageDelivered",
           { messageId: data.messageId },
           {
-            id: stream.substring("Ticket-".length),
+            stream,
           }
         )
       );

@@ -42,7 +42,7 @@ export const AutomaticEscalation = (): Policy<
               requestedById: AUTO_ESCALATION_ID,
             },
             {
-              id: ticket.id.substring("Ticket-".length),
+              stream: ticket.id,
             }
           );
         }

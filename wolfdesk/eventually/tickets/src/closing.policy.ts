@@ -40,7 +40,7 @@ export const Closing = (): Policy<
               closedById: CLOSING_ID,
             },
             {
-              id: ticket.id.substring("Ticket-".length),
+              stream: ticket.id,
             }
           );
         }

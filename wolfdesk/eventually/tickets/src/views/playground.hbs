@@ -63,7 +63,7 @@
   }
 
   const openTicket = (title, priority, message) => {
-    const id = crypto.randomUUID();
+    const stream = `Ticket-${crypto.randomUUID()}`;
     const body = {
       productId: crypto.randomUUID(),
       supportCategoryId: crypto.randomUUID(),
@@ -72,7 +72,7 @@
       title,
       message
     };
-    command("open-ticket", id, body);
+    command("open-ticket", stream, body);
   }
 
   const addMessage = (id, message) => {
@@ -105,11 +105,10 @@
       const found = tickets.rows.namedItem(state.id);
       if(found) tickets.deleteRow(found.rowIndex);
 
+      const ticketId = state.id;
       const row = tickets.insertRow(1);
-      row.id = state.id;
+      row.id = ticketId;
       fields.forEach(f => row.insertCell().appendChild(document.createTextNode(state[f])));
-
-      const ticketId = state.id.substring("Ticket-".length);
 
       if(!state.resolvedById) {
         const resolve = document.createElement("button");

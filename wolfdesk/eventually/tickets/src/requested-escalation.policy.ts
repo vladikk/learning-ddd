@@ -21,7 +21,7 @@ export const RequestedEscalation = (): Policy<
             requestedById: data.requestedById,
           },
           {
-            id: stream.substring("Ticket-".length),
+            stream,
           }
         )
       );
