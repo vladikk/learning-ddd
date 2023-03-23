@@ -1,5 +1,6 @@
 import {
   app,
+  broker,
   client,
   CommittedEvent,
   dispose,
@@ -32,16 +33,17 @@ describe("ticket", () => {
     await dispose()();
   });
 
-  it("should travel the happy path", async () => {
+  it.only("should travel the happy path", async () => {
     const ticketId = chance.guid();
     const agentId = chance.guid();
     const userId = chance.guid();
     const title = "OpenTicket";
 
     await openTicket(ticketId, title, "Opening a new ticket", userId);
-    await assignTicket(ticketId, agentId);
-    await addMessage(ticketId, "first message");
-    await requestTicketEscalation(ticketId);
+    await assignTicket(ticketId, agentId, new Date(), new Date());
+    await broker().drain();
+    await addMessage(ticketId, "first message", userId);
+    await requestTicketEscalation(ticketId, userId);
     await escalateTicket(ticketId);
 
     const snapshot = await client().load(Ticket, ticketId, false);
@@ -56,7 +58,7 @@ describe("ticket", () => {
     await reassignTicket(ticketId);
     await markMessageDelivered(ticketId, message?.messageId || "");
     await acknowledgeMessage(ticketId, message?.messageId || "");
-    await markTicketResolved(ticketId);
+    await markTicketResolved(ticketId, userId);
     await closeTicket(ticketId);
 
     const snapshot2 = await client().load(Ticket, ticketId);

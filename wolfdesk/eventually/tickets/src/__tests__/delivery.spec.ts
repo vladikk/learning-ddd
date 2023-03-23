@@ -16,9 +16,10 @@ describe("delivery policy", () => {
   });
 
   it("should deliver new ticket", async () => {
+    const userId = chance.guid();
     const ticketId = chance.guid();
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
-    await addMessage(ticketId, "the body");
+    await openTicket(ticketId, "assign me", "Opening a new ticket", userId);
+    await addMessage(ticketId, "the body", userId);
     await broker().drain();
 
     const snapshot = await client().load(Ticket, ticketId, false);

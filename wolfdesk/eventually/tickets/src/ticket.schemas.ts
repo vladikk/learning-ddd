@@ -25,6 +25,7 @@ export const Ticket = z.object({
   supportCategoryId: z.string().uuid(),
   priority: z.nativeEnum(Priority),
   title: z.string().min(1),
+  userId: z.string().uuid(),
   messages: z.record(z.string().uuid(), Message),
   agentId: z.string().uuid().optional(),
   escalationId: z.string().uuid().optional(),

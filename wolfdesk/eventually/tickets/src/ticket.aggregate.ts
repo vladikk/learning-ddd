@@ -12,6 +12,7 @@ export const Ticket = (
   schemas: types.schemas,
   init: () => ({
     productId: "",
+    userId: "",
     supportCategoryId: "",
     priority: Priority.Low,
     title: "",
@@ -22,6 +23,7 @@ export const Ticket = (
       const { message, messageId, userId, ...other } = data;
       return {
         ...other,
+        userId,
         messages: {
           [messageId]: {
             messageId,
@@ -80,8 +82,11 @@ export const Ticket = (
       if (!state.productId) throw new errors.TicketIsNotOpenError(stream);
       if (state.closedById) throw new errors.TicketIsClosedError(stream);
 
+      // only owner or assigned agent can add messages
+      if (!(state.userId === data.from || state.agentId === data.from))
+        throw new errors.UnauthorizedError(stream, data.from);
+
       // TODO: invariants
-      // only owners or agents can add new messages
 
       return Promise.resolve([
         bind("MessageAdded", {
@@ -94,8 +99,13 @@ export const Ticket = (
       if (!state.productId) throw new errors.TicketIsNotOpenError(stream);
       if (state.closedById) throw new errors.TicketIsClosedError(stream);
 
-      // TODO: invariants
       // escalation can only be requested by owner after window expired
+      if (state.userId != data.requestedById)
+        throw new errors.UnauthorizedError(stream, data.requestedById);
+      if (state.escalateAfter && state.escalateAfter > new Date())
+        throw new errors.TicketEscalationError(stream, data.requestedById);
+
+      // TODO: invariants
 
       return Promise.resolve([
         bind("TicketEscalationRequested", { ...data, requestId: randomUUID() }),
@@ -128,14 +138,18 @@ export const Ticket = (
         throw new errors.MessageNotFoundError(data.messageId);
       return Promise.resolve([bind("MessageDelivered", { ...data })]);
     },
-    AcknowledgeMessage: (data, state) => {
+    AcknowledgeMessage: (data, state, actor) => {
       if (!state.productId) throw new errors.TicketIsNotOpenError(stream);
       if (state.closedById) throw new errors.TicketIsClosedError(stream);
-      if (!state.messages[data.messageId])
-        throw new errors.MessageNotFoundError(data.messageId);
+
+      const msg = state.messages[data.messageId];
+      if (!msg) throw new errors.MessageNotFoundError(data.messageId);
+
+      // message can only be acknowledged by receiver
+      if (msg.to !== actor?.name)
+        throw new errors.UnauthorizedError(stream, actor?.name || "");
 
       // TODO: invariants
-      // message can only be acknowledged by receiver?
 
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
@@ -143,8 +157,16 @@ export const Ticket = (
       if (!state.productId) throw new errors.TicketIsNotOpenError(stream);
       if (state.closedById) throw new errors.TicketIsClosedError(stream);
 
-      // TODO: invariants
       // ticket can only be resolved by agent or owner?
+      if (
+        !(
+          state.userId === data.resolvedById ||
+          state.agentId === data.resolvedById
+        )
+      )
+        throw new errors.UnauthorizedError(stream, data.resolvedById);
+
+      // TODO: invariants
 
       return Promise.resolve([bind("TicketResolved", { ...data })]);
     },

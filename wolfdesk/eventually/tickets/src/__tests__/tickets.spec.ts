@@ -24,14 +24,15 @@ describe("tickets projector", () => {
   });
 
   it("should project tickets", async () => {
+    const userId = chance.guid();
     const ticketId = chance.guid();
     const title = "assign me";
     const message = "openting a new ticket for projection";
-    await openTicket(ticketId, title, message);
-    await addMessage(ticketId, "first message");
-    await escalateTicket(ticketId);
+    await openTicket(ticketId, title, message, userId);
+    await addMessage(ticketId, "first message", userId);
+    await escalateTicket(ticketId, userId);
     await reassignTicket(ticketId);
-    await markTicketResolved(ticketId);
+    await markTicketResolved(ticketId, userId);
     await closeTicket(ticketId);
     await broker().drain();
 

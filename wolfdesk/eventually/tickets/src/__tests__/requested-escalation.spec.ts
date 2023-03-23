@@ -16,9 +16,10 @@ describe("requested escalation policy", () => {
   });
 
   it("should request escalation", async () => {
+    const userId = chance.guid();
     const ticketId = chance.guid();
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
-    await requestTicketEscalation(ticketId);
+    await openTicket(ticketId, "assign me", "Opening a new ticket", userId);
+    await requestTicketEscalation(ticketId, userId);
     await broker().drain();
 
     const snapshot = await client().load(Ticket, ticketId);
