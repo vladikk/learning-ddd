@@ -570,9 +570,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.2.0.tgz#ad752bdaa49326fde93c6367829d4537b6199516"
-  integrity sha512-o65Aly0hTQHAcBHgcSgj5eI93PzQshVy5hZZPAcXjMaXYwYyvFz59KJHaLRwZkGsmfbCy1aMxp0XYaQnOaYBXA==
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.2.1.tgz#993b076e119d977bd0718a874a9c7554c4420f65"
+  integrity sha512-axSxwpJxdId9/Kmc4n4N+uHBDSsB4y4TYirM5NmcO9aSD94NguT3lRF4xci/Ee4DGAPYLVfV3zGiLnTGJtmHyw==
   dependencies:
     "@anatine/zod-openapi" "^1.12.0"
     "@rotorsoft/eventually" "^5"
@@ -591,9 +591,9 @@
     zod "^3.21.4"
 
 "@rotorsoft/eventually@^5", "@rotorsoft/eventually@^5.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.2.0.tgz#e78a6054ba9ddad64343eedd54fd42fa512501b5"
-  integrity sha512-jHGC5g1hIxhW9sB/1izbXJFm4ETNp/H7SS2E/hWtEr+5jFZZ4CMJGKPAOjquYcAtzy+xAB5hxjNen3bqCK6clA==
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.2.1.tgz#fea62357ec89c3bbbf8ae75179cdab3e9e3daced"
+  integrity sha512-72WBY+tpIiRw54db0PMklbEchzD8iu+oWtcq6iVuJjnutsu0vKF6I/GD/kq71DhxSQUUzacoiV8OxKqLque4Fw==
   dependencies:
     deepmerge "^4.3.0"
     dotenv "^16.0.3"
@@ -755,9 +755,9 @@
   integrity sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==
 
 "@types/node@^18.13.0":
-  version "18.15.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.5.tgz#3af577099a99c61479149b716183e70b5239324a"
-  integrity sha512-Ark2WDjjZO7GmvsyFFf81MXuGTA/d6oP38anyxWOL6EREyBKAxKoFHwBhaZxCfLRLpO8JgVXwqOwSwa7jRcjew==
+  version "18.15.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.7.tgz#33514fca9bdf136f77027358850c0fb9cd93c669"
+  integrity sha512-LFmUbFunqmBn26wJZgZPYZPrDR1RwGOu2v79Mgcka1ndO6V0/cwjivPTc4yoK6n9kmw4/ls1r8cLrvh2iMibFA==
 
 "@types/prettier@^2.1.5":
   version "2.7.2"
@@ -1400,12 +1400,12 @@ expect@^29.0.0, expect@^29.5.0:
     jest-util "^29.5.0"
 
 express-handlebars@^7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-7.0.2.tgz#d5dff632200d33feea33312c5cb32c57317790eb"
-  integrity sha512-W7QuI8i4jjxGNqZJebXzugHuJV32uGTMWqSzqTKsgBTPVsWR3oYR2b9VNQ53vmWbUH1G8r/9GIO3WCqa1Myf1w==
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-7.0.4.tgz#c09bb6ea61954c5d4c24beccaa20eace1b39791d"
+  integrity sha512-gs/2tWyCfJgXlV+6JbpRZj7d2Pe++1tCyaHPrWp+Q5PsS1WlLbSt8cKmyGeYFzzSNUFChEm52Pn+P5o6qRVDVA==
   dependencies:
-    glob "^9.2.1"
-    graceful-fs "^4.2.10"
+    glob "^9.3.2"
+    graceful-fs "^4.2.11"
     handlebars "^4.7.7"
 
 express@^4.18.2:
@@ -1572,10 +1572,10 @@ glob@^7.1.3, glob@^7.1.4:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^9.2.1:
-  version "9.3.1"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-9.3.1.tgz#4a15cf72479a440f77e97805b21e1b5b6e4fb18a"
-  integrity sha512-qERvJb7IGsnkx6YYmaaGvDpf77c951hICMdWaFXyH3PlVob8sbPJJyJX0kWkiCWyXUzoy9UOTNjGg0RbD8bYIw==
+glob@^9.3.2:
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-9.3.2.tgz#8528522e003819e63d11c979b30896e0eaf52eda"
+  integrity sha512-BTv/JhKXFEHsErMte/AnfiSv8yYOLLiyH2lTg8vn02O21zWFgHPTfxtgn1QRe7NRgggUhC8hacR2Re94svHqeA==
   dependencies:
     fs.realpath "^1.0.0"
     minimatch "^7.4.1"
@@ -1587,7 +1587,7 @@ globals@^11.1.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.12.0.tgz#ab8795338868a0babd8525758018c2a7eb95c42e"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
-graceful-fs@^4.2.10:
+graceful-fs@^4.2.11:
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
@@ -2312,9 +2312,9 @@ minimatch@^3.0.4, minimatch@^3.1.1:
     brace-expansion "^1.1.7"
 
 minimatch@^7.4.1:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.2.tgz#157e847d79ca671054253b840656720cb733f10f"
-  integrity sha512-xy4q7wou3vUoC9k1xGTXc+awNdGaGVHtFUaey8tiX4H1QRc04DZ/rmDFwNm2EBsuYEhAZ6SgMmYf3InGY6OauA==
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.3.tgz#012cbf110a65134bb354ae9773b55256cdb045a2"
+  integrity sha512-5UB4yYusDtkRPbRiy1cqZ1IpGNcJCGlEMG17RKzPddpyiPKoCdwohbED8g4QXT0ewCt8LTkQXuljsUfQ3FKM4A==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -2483,9 +2483,9 @@ path-parse@^1.0.7:
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
 path-scurry@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/path-scurry/-/path-scurry-1.6.1.tgz#dab45f7bb1d3f45a0e271ab258999f4ab7e23132"
-  integrity sha512-OW+5s+7cw6253Q4E+8qQ/u1fVvcJQCJo/VFD8pje+dbJCF1n5ZRMV2AEHbGp+5Q7jxQIYJxkHopnj6nzdGeZLA==
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/path-scurry/-/path-scurry-1.6.3.tgz#4eba7183d64ef88b63c7d330bddc3ba279dc6c40"
+  integrity sha512-RAmB+n30SlN+HnNx6EbcpoDy9nwdpcGPnEKrJnu6GZoDWBdIjo1UQMVtW2ybtC7LC2oKLcMq8y5g8WnKLiod9g==
   dependencies:
     lru-cache "^7.14.1"
     minipass "^4.0.2"

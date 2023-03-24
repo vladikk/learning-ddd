@@ -4,6 +4,7 @@ import {
   client,
   CommittedEvent,
   dispose,
+  InvariantError,
   log,
 } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
@@ -33,7 +34,7 @@ describe("ticket", () => {
     await dispose()();
   });
 
-  it.only("should travel the happy path", async () => {
+  it("should travel the happy path", async () => {
     const ticketId = chance.guid();
     const agentId = chance.guid();
     const userId = chance.guid();
@@ -89,80 +90,64 @@ describe("ticket", () => {
 
   it("should throw when trying to close twice or empty", async () => {
     const ticketId = chance.guid();
-    await expect(closeTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
-    );
+    await expect(closeTicket(ticketId)).rejects.toThrow(InvariantError);
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
-    await expect(closeTicket(ticketId)).rejects.toThrow(
-      errors.TicketCannotCloseTwiceError
-    );
+    await expect(closeTicket(ticketId)).rejects.toThrow(InvariantError);
   });
 
   it("should throw when assigning agent to empty or closed ticket", async () => {
     const ticketId = chance.guid();
-    await expect(assignTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
-    );
+    await expect(assignTicket(ticketId)).rejects.toThrow(InvariantError);
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
-    await expect(assignTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsClosedError
-    );
+    await expect(assignTicket(ticketId)).rejects.toThrow(InvariantError);
   });
 
   it("should throw when adding message to empty or closed ticket", async () => {
     const ticketId = chance.guid();
     await expect(addMessage(ticketId, "message")).rejects.toThrow(
-      errors.TicketIsNotOpenError
+      InvariantError
     );
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
     await expect(addMessage(ticketId, "message")).rejects.toThrow(
-      errors.TicketIsClosedError
+      InvariantError
     );
   });
 
   it("should throw when requesting escalation to empty or closed ticket", async () => {
     const ticketId = chance.guid();
     await expect(requestTicketEscalation(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
+      InvariantError
     );
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
     await expect(requestTicketEscalation(ticketId)).rejects.toThrow(
-      errors.TicketIsClosedError
+      InvariantError
     );
   });
 
   it("should throw when escalating empty or closed ticket", async () => {
     const ticketId = chance.guid();
-    await expect(escalateTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
-    );
+    await expect(escalateTicket(ticketId)).rejects.toThrow(InvariantError);
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
-    await expect(escalateTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsClosedError
-    );
+    await expect(escalateTicket(ticketId)).rejects.toThrow(InvariantError);
   });
 
   it("should throw when reassigning empty or closed ticket", async () => {
     const ticketId = chance.guid();
-    await expect(reassignTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
-    );
+    await expect(reassignTicket(ticketId)).rejects.toThrow(InvariantError);
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
-    await expect(reassignTicket(ticketId)).rejects.toThrow(
-      errors.TicketIsClosedError
-    );
+    await expect(reassignTicket(ticketId)).rejects.toThrow(InvariantError);
   });
 
   it("should throw when marking messages delivered on empty or closed or invalid ticket", async () => {
     const ticketId = chance.guid();
     await expect(markMessageDelivered(ticketId, chance.guid())).rejects.toThrow(
-      errors.TicketIsNotOpenError
+      InvariantError
     );
     await openTicket(ticketId, "opening once", "the first opening");
     await expect(markMessageDelivered(ticketId, chance.guid())).rejects.toThrow(
@@ -170,14 +155,14 @@ describe("ticket", () => {
     );
     await closeTicket(ticketId);
     await expect(markMessageDelivered(ticketId, chance.guid())).rejects.toThrow(
-      errors.TicketIsClosedError
+      InvariantError
     );
   });
 
   it("should throw when marking message read on empty or closed or invalid ticket", async () => {
     const ticketId = chance.guid();
     await expect(acknowledgeMessage(ticketId, chance.guid())).rejects.toThrow(
-      errors.TicketIsNotOpenError
+      InvariantError
     );
     await openTicket(ticketId, "opening once", "the first opening");
     await expect(acknowledgeMessage(ticketId, chance.guid())).rejects.toThrow(
@@ -185,19 +170,15 @@ describe("ticket", () => {
     );
     await closeTicket(ticketId);
     await expect(acknowledgeMessage(ticketId, chance.guid())).rejects.toThrow(
-      errors.TicketIsClosedError
+      InvariantError
     );
   });
 
   it("should throw when resolving empty or closed ticket", async () => {
     const ticketId = chance.guid();
-    await expect(markTicketResolved(ticketId)).rejects.toThrow(
-      errors.TicketIsNotOpenError
-    );
+    await expect(markTicketResolved(ticketId)).rejects.toThrow(InvariantError);
     await openTicket(ticketId, "opening once", "the first opening");
     await closeTicket(ticketId);
-    await expect(markTicketResolved(ticketId)).rejects.toThrow(
-      errors.TicketIsClosedError
-    );
+    await expect(markTicketResolved(ticketId)).rejects.toThrow(InvariantError);
   });
 });
