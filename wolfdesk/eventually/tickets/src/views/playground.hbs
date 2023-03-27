@@ -48,8 +48,6 @@
 </div>
 
 <script>
-  const userId = crypto.randomUUID();
-
   const command = (name, id, body) => {
     const result = document.getElementById("result");
     result.innerText = "";
@@ -70,7 +68,6 @@
       productId: crypto.randomUUID(),
       supportCategoryId: crypto.randomUUID(),
       priority,
-      userId,
       title,
       message
     };
@@ -79,7 +76,6 @@
 
   const addMessage = (id, message) => {
     command("add-message", id, {
-      from: userId,
       to: crypto.randomUUID(),
       body: message,
       attachments: {}
@@ -87,9 +83,7 @@
   }
 
   const markTicketResolved = (id) => {
-    command("mark-ticket-resolved", id, {
-      resolvedById: userId
-    });
+    command("mark-ticket-resolved", id, {});
   }
   
   const fields = ["id", "priority", "title", "agentId", "resolvedById", "messages"];

@@ -36,11 +36,10 @@ export const Closing = (): Policy<
           await client().command(
             Ticket,
             "CloseTicket",
-            {
-              closedById: CLOSING_ID,
-            },
+            {},
             {
               stream: ticket.id,
+              actor: { id: CLOSING_ID, name: "Closing", roles: [] },
             }
           );
         }

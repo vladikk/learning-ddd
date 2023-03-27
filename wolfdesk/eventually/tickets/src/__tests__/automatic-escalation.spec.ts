@@ -1,7 +1,7 @@
 import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { assignTicket, openTicket } from "./commands";
+import { assignTicket, openTicket, target } from "./commands";
 import { AutomaticEscalation } from "../automatic-escalation.policy";
 import { Tickets } from "../ticket.projector";
 
@@ -17,9 +17,9 @@ describe("automatic escalation policy", () => {
   });
 
   it("should request escalation", async () => {
-    const ticketId = chance.guid();
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
-    await assignTicket(ticketId, chance.guid(), new Date(), new Date());
+    const t = target();
+    await openTicket(t, "assign me", "Opening a new ticket");
+    await assignTicket(t, chance.guid(), new Date(), new Date());
     await broker().drain();
 
     await client().event(AutomaticEscalation, {
@@ -33,7 +33,7 @@ describe("automatic escalation policy", () => {
     });
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, ticketId);
+    const snapshot = await client().load(Ticket, t.stream || "");
     expect(snapshot.state.escalationId).toBeDefined();
   });
 });

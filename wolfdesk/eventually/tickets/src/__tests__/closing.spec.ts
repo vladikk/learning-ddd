@@ -1,7 +1,7 @@
 import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { openTicket } from "./commands";
+import { openTicket, target } from "./commands";
 import { Closing } from "../closing.policy";
 import { Tickets } from "../ticket.projector";
 import { Priority } from "../ticket.schemas";
@@ -18,12 +18,11 @@ describe("closing policy", () => {
   });
 
   it("should close ticket", async () => {
-    const ticketId = chance.guid();
+    const t = target();
     await openTicket(
-      ticketId,
+      t,
       "assign me",
       "Opening a new ticket",
-      chance.guid(),
       chance.guid(),
       chance.guid(),
       Priority.High,
@@ -42,7 +41,7 @@ describe("closing policy", () => {
     });
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, ticketId);
+    const snapshot = await client().load(Ticket, t.stream || "");
     expect(snapshot.state.closedById).toBeDefined();
   });
 });

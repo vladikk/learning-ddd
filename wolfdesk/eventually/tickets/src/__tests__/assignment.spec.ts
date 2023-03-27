@@ -1,10 +1,7 @@
 import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
-import { Chance } from "chance";
-import { openTicket } from "./commands";
+import { openTicket, target } from "./commands";
 import { Assignment } from "../assignment.policy";
-
-const chance = new Chance();
 
 describe("assignment policy", () => {
   beforeAll(() => {
@@ -16,11 +13,11 @@ describe("assignment policy", () => {
   });
 
   it("should assign agent to new ticket", async () => {
-    const ticketId = chance.guid();
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
+    const t = target();
+    await openTicket(t, "assign me", "Opening a new ticket");
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, ticketId, false);
+    const snapshot = await client().load(Ticket, t.stream || "", false);
     expect(snapshot.state.agentId).toBeDefined();
   });
 });

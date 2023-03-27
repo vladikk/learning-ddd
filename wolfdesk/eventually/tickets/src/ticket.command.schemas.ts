@@ -1,3 +1,4 @@
+import { ZodEmpty } from "@rotorsoft/eventually";
 import { z } from "zod";
 import { Attachment, Priority } from "./ticket.schemas";
 
@@ -6,7 +7,6 @@ export const OpenTicket = z
     productId: z.string().uuid(),
     supportCategoryId: z.string().uuid(),
     priority: z.nativeEnum(Priority),
-    userId: z.string().uuid(),
     title: z.string().min(1),
     message: z.string().min(1),
     closeAfter: z.date().optional(),
@@ -23,24 +23,17 @@ export const AssignTicket = z
 
 export const AddMessage = z
   .object({
-    from: z.string().uuid(),
     to: z.string().uuid(),
     body: z.string().min(1),
     attachments: z.record(z.string().url(), Attachment),
   })
   .describe("Add a new message to the ticket");
 
-export const CloseTicket = z
-  .object({
-    closedById: z.string().uuid(),
-  })
-  .describe("Closes the ticket");
+export const CloseTicket = ZodEmpty.describe("Closes the ticket");
 
-export const RequestTicketEscalation = z
-  .object({
-    requestedById: z.string().uuid(),
-  })
-  .describe("Requests a ticket escalation");
+export const RequestTicketEscalation = ZodEmpty.describe(
+  "Requests a ticket escalation"
+);
 
 export const EscalateTicket = z
   .object({
@@ -69,8 +62,4 @@ export const AcknowledgeMessage = z
   })
   .describe("Flags the message as read");
 
-export const MarkTicketResolved = z
-  .object({
-    resolvedById: z.string().uuid(),
-  })
-  .describe("Flags ticket as resolved");
+export const MarkTicketResolved = ZodEmpty.describe("Flags ticket as resolved");

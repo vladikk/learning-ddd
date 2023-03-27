@@ -1,9 +1,20 @@
-import { app, bootstrap, client, Scope, store } from "@rotorsoft/eventually";
+import {
+  Actor,
+  app,
+  bootstrap,
+  client,
+  Scope,
+  store,
+} from "@rotorsoft/eventually";
 import { ExpressApp, sse } from "@rotorsoft/eventually-express";
 import {
   PostgresProjectorStore,
   PostgresStore,
 } from "@rotorsoft/eventually-pg";
+import { NextFunction, Request, Response } from "express";
+import { engine } from "express-handlebars";
+import { randomUUID } from "node:crypto";
+import path from "node:path";
 import { Assignment } from "./assignment.policy";
 import { AutomaticEscalation } from "./automatic-escalation.policy";
 import { Closing } from "./closing.policy";
@@ -12,8 +23,6 @@ import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
 import { Ticket } from "./ticket.aggregate";
 import { TicketProjection, Tickets } from "./ticket.projector";
-import { engine } from "express-handlebars";
-import path from "node:path";
 
 bootstrap(async () => {
   await store(PostgresStore("tickets"));
@@ -47,6 +56,21 @@ bootstrap(async () => {
   );
   await pgTicketProjectorStore.seed();
 
+  // mock auth middleware
+  const userId = randomUUID();
+  const mockedAuth = (
+    req: Request & { actor?: Actor },
+    _: Response,
+    next: NextFunction
+  ): void => {
+    req.actor = {
+      id: userId,
+      name: "mocked user name",
+      roles: [],
+    };
+    next();
+  };
+
   const express = app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
@@ -56,7 +80,7 @@ bootstrap(async () => {
     .with(AutomaticEscalation, { scope: Scope.public })
     .with(Closing, { scope: Scope.public })
     .with(Tickets, { store: pgTicketProjectorStore })
-    .build();
+    .build([mockedAuth]);
 
   //-------------------------------------------------------------------------------------------------------------------
   //-- A little .hbs playground to watch ticket projections in real time

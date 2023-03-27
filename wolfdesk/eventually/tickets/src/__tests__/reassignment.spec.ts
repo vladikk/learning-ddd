@@ -1,7 +1,7 @@
 import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { assignTicket, openTicket } from "./commands";
+import { assignTicket, openTicket, target } from "./commands";
 import { Reassingment } from "../reassignment.policy";
 import { Tickets } from "../ticket.projector";
 
@@ -18,11 +18,11 @@ describe("reassignment policy", () => {
 
   it("should reassign", async () => {
     const now = new Date();
-    const ticketId = chance.guid();
+    const t = target();
     const agentId = chance.guid();
 
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
-    await assignTicket(ticketId, agentId, now, now);
+    await openTicket(t, "assign me", "Opening a new ticket");
+    await assignTicket(t, agentId, now, now);
     await broker().drain();
 
     await client().event(Reassingment, {
@@ -36,7 +36,7 @@ describe("reassignment policy", () => {
     });
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, ticketId);
+    const snapshot = await client().load(Ticket, t.stream || "");
     expect(snapshot.state.agentId).toBeDefined();
     expect(snapshot.state.agentId).not.toEqual(agentId);
     expect(snapshot.state.reassignAfter?.getTime()).toBeGreaterThan(
