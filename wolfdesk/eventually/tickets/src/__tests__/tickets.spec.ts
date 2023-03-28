@@ -1,4 +1,4 @@
-import { app, client, dispose, State } from "@rotorsoft/eventually";
+import { app, broker, client, dispose, State } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import {
@@ -8,6 +8,7 @@ import {
   markTicketResolved,
   openTicket,
   reassignTicket,
+  target,
 } from "./commands";
 import { Tickets } from "../ticket.projector";
 import { Assignment } from "../assignment.policy";
@@ -24,19 +25,20 @@ describe("tickets projector", () => {
   });
 
   it("should project tickets", async () => {
-    const ticketId = chance.guid();
+    const t = target();
     const title = "assign me";
     const message = "openting a new ticket for projection";
-    await openTicket(ticketId, title, message);
-    await addMessage(ticketId, "first message");
-    await escalateTicket(ticketId);
-    await reassignTicket(ticketId);
-    await markTicketResolved(ticketId);
-    await closeTicket(ticketId);
+    await openTicket(t, title, message);
+    await addMessage(t, "first message");
+    await escalateTicket(t);
+    await reassignTicket(t);
+    await markTicketResolved(t);
+    await closeTicket(t);
+    await broker().drain();
 
     const records: Array<State> = [];
-    const count = await client().read(Tickets, ticketId, ({ state }) => {
-      expect(state.id).toBe(ticketId);
+    const count = await client().read(Tickets, t.stream || "", ({ state }) => {
+      expect(state.id).toBe(t.stream);
       expect(state.userId).toBeDefined();
       expect(state.agentId).toBeDefined();
       expect(state.title).toBe(title);

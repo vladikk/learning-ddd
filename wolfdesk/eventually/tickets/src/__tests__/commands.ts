@@ -1,4 +1,4 @@
-import { client } from "@rotorsoft/eventually";
+import { client, CommandTarget } from "@rotorsoft/eventually";
 import { Chance } from "chance";
 import { Ticket } from "../ticket.aggregate";
 import { Priority } from "../ticket.schemas";
@@ -6,11 +6,18 @@ const chance = new Chance();
 const DAY = 24 * 60 * 60 * 1000;
 const oneDay = () => new Date(Date.now() + DAY);
 
+export const target = (
+  userId = chance.guid(),
+  ticketId = chance.guid()
+): CommandTarget => ({
+  stream: ticketId,
+  actor: { id: userId, name: "actor", roles: [] },
+});
+
 export const openTicket = (
-  ticketId: string,
+  target: CommandTarget,
   title: string,
   message: string,
-  userId = chance.guid(),
   productId = chance.guid(),
   supportCategoryId = chance.guid(),
   priority = Priority.Low,
@@ -20,20 +27,18 @@ export const openTicket = (
     Ticket,
     "OpenTicket",
     {
-      ticketId,
       productId,
       supportCategoryId,
       priority,
-      userId,
       title,
       message,
       closeAfter,
     },
-    { id: ticketId }
+    target
   );
 
 export const assignTicket = (
-  ticketId: string,
+  target: CommandTarget,
   agentId = chance.guid(),
   escalateAfter = oneDay(),
   reassignAfter = oneDay()
@@ -42,69 +47,49 @@ export const assignTicket = (
     Ticket,
     "AssignTicket",
     {
-      ticketId,
       agentId,
       escalateAfter,
       reassignAfter,
     },
-    { id: ticketId }
+    target
   );
 
-export const closeTicket = (ticketId: string, closedById = chance.guid()) =>
-  client().command(
-    Ticket,
-    "CloseTicket",
-    {
-      ticketId,
-      closedById,
-    },
-    { id: ticketId }
-  );
+export const closeTicket = (target: CommandTarget) =>
+  client().command(Ticket, "CloseTicket", {}, target);
 
 export const addMessage = (
-  ticketId: string,
+  target: CommandTarget,
   body: string,
-  from = chance.guid(),
   to = chance.guid()
 ) =>
   client().command(
     Ticket,
     "AddMessage",
     {
-      ticketId,
       body,
-      from,
       to,
       attachments: {},
     },
-    { id: ticketId }
+    target
   );
 
-export const requestTicketEscalation = (
-  ticketId: string,
-  requestedById = chance.guid()
-) =>
-  client().command(
-    Ticket,
-    "RequestTicketEscalation",
-    { ticketId, requestedById },
-    { id: ticketId }
-  );
+export const requestTicketEscalation = (target: CommandTarget) =>
+  client().command(Ticket, "RequestTicketEscalation", {}, target);
 
 export const escalateTicket = (
-  ticketId: string,
+  target: CommandTarget,
   requestId = chance.guid(),
   requestedById = chance.guid()
 ) =>
   client().command(
     Ticket,
     "EscalateTicket",
-    { ticketId, requestId, requestedById },
-    { id: ticketId }
+    { requestId, requestedById },
+    target
   );
 
 export const reassignTicket = (
-  ticketId: string,
+  target: CommandTarget,
   agentId = chance.guid(),
   escalateAfter = oneDay(),
   reassignAfter = oneDay()
@@ -112,33 +97,17 @@ export const reassignTicket = (
   client().command(
     Ticket,
     "ReassignTicket",
-    { ticketId, agentId, escalateAfter, reassignAfter },
-    { id: ticketId }
+    { agentId, escalateAfter, reassignAfter },
+    target
   );
 
-export const markMessageDelivered = (ticketId: string, messageId: string) =>
-  client().command(
-    Ticket,
-    "MarkMessageDelivered",
-    { ticketId, messageId },
-    { id: ticketId }
-  );
+export const markMessageDelivered = (
+  target: CommandTarget,
+  messageId: string
+) => client().command(Ticket, "MarkMessageDelivered", { messageId }, target);
 
-export const acknowledgeMessage = (ticketId: string, messageId: string) =>
-  client().command(
-    Ticket,
-    "AcknowledgeMessage",
-    { ticketId, messageId },
-    { id: ticketId }
-  );
+export const acknowledgeMessage = (target: CommandTarget, messageId: string) =>
+  client().command(Ticket, "AcknowledgeMessage", { messageId }, target);
 
-export const markTicketResolved = (
-  ticketId: string,
-  resolvedById = chance.guid()
-) =>
-  client().command(
-    Ticket,
-    "MarkTicketResolved",
-    { ticketId, resolvedById },
-    { id: ticketId }
-  );
+export const markTicketResolved = (target: CommandTarget) =>
+  client().command(Ticket, "MarkTicketResolved", {}, target);

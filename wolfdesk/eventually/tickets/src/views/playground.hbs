@@ -1,0 +1,127 @@
+<div class="border rounded m-3 p-3">
+  <div class="border rounded m-3 p-3">
+    <div class="row">
+      <div class="form-group col-md-8">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" placeholder="Title"/>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="number">Priority</label>
+        <select class="form-control" id="priority">
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-12">
+        <label for="message">Message</label>
+        <input type="text" class="form-control" id="message" placeholder="Message"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-4 p-3">
+        <button class="btn btn-primary" id="open">Open</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-12 p-3" id="result">
+      </div>
+    </div>
+  </div>
+
+  <table id="tickets" class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">Ticket</th>
+        <th scope="col">Priority</th>
+        <th scope="col">Title</th>
+        <th scope="col">AgentId</th>
+        <th scope="col">ResolvedById</th>
+        <th scope="col" class="text-end">Messages</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const command = (name, id, body) => {
+    const result = document.getElementById("result");
+    result.innerText = "";
+
+    fetch(`/ticket/${id}/${name}`, {
+      method: "post",
+      body: JSON.stringify(body),
+      headers: { 'Content-type': 'application/json;charset=UTF-8' }
+    })
+    .then((response) => response.json())
+    .then((json) => { result.innerText = json.message; })
+    .catch((error) => { result.innerText = error.message; })
+  }
+
+  const openTicket = (title, priority, message) => {
+    const stream = `Ticket-${crypto.randomUUID()}`;
+    const body = {
+      productId: crypto.randomUUID(),
+      supportCategoryId: crypto.randomUUID(),
+      priority,
+      title,
+      message
+    };
+    command("open-ticket", stream, body);
+  }
+
+  const addMessage = (id, message) => {
+    command("add-message", id, {
+      to: crypto.randomUUID(),
+      body: message,
+      attachments: {}
+    });
+  }
+
+  const markTicketResolved = (id) => {
+    command("mark-ticket-resolved", id, {});
+  }
+  
+  const fields = ["id", "priority", "title", "agentId", "resolvedById", "messages"];
+
+  document.addEventListener("DOMContentLoaded", function () { 
+    const tickets = document.getElementById("tickets"); 
+    const priority = document.getElementById("priority");
+    const title = document.getElementById("title");
+    const message = document.getElementById("message");
+    const open = document.getElementById("open");
+
+    open.onclick = () => openTicket(title.value, priority.value, message.value);
+
+    const render = (state) => {
+      const found = tickets.rows.namedItem(state.id);
+      if(found) tickets.deleteRow(found.rowIndex);
+
+      const ticketId = state.id;
+      const row = tickets.insertRow(1);
+      row.id = ticketId;
+      fields.forEach(f => row.insertCell().appendChild(document.createTextNode(state[f])));
+
+      if(!state.resolvedById) {
+        const resolve = document.createElement("button");
+        resolve.innerText = "Resolve";
+        resolve.onclick = () => markTicketResolved(ticketId);
+        row.insertCell().appendChild(resolve);
+
+        const add = document.createElement("button");
+        add.innerText = "Add Message";
+        add.onclick = () => addMessage(ticketId, message.value);
+        row.insertCell().appendChild(add);
+      }
+    };
+
+    const watcher = new EventSource("/ticket-watch");
+    watcher.addEventListener("ticket", ({ data }) => {
+      render(JSON.parse(data));
+    });
+  });
+</script>

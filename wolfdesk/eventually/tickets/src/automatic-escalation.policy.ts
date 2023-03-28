@@ -38,12 +38,11 @@ export const AutomaticEscalation = (): Policy<
             Ticket,
             "EscalateTicket",
             {
-              ticketId: ticket.id,
               requestId: randomUUID(),
               requestedById: AUTO_ESCALATION_ID,
             },
             {
-              id: ticket.id,
+              stream: ticket.id,
             }
           );
         }

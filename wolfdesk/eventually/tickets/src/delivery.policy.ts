@@ -13,14 +13,14 @@ export const Delivery = (): Policy<
     commands: { MarkMessageDelivered: "Marks message as delivered" },
   },
   on: {
-    MessageAdded: async ({ data }) => {
+    MessageAdded: async ({ stream, data }) => {
       await deliverMessage(data);
       return Promise.resolve(
         bind(
           "MarkMessageDelivered",
-          { ticketId: data.ticketId, messageId: data.messageId },
+          { messageId: data.messageId },
           {
-            id: data.ticketId,
+            stream,
           }
         )
       );

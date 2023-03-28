@@ -1,7 +1,7 @@
-import { app, client, dispose } from "@rotorsoft/eventually";
+import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { openTicket, requestTicketEscalation } from "./commands";
+import { openTicket, requestTicketEscalation, target } from "./commands";
 import { RequestedEscalation } from "../requested-escalation.policy";
 
 const chance = new Chance();
@@ -16,10 +16,12 @@ describe("requested escalation policy", () => {
   });
 
   it("should request escalation", async () => {
-    const ticketId = chance.guid();
-    await openTicket(ticketId, "assign me", "Opening a new ticket");
-    await requestTicketEscalation(ticketId);
-    const snapshot = await client().load(Ticket, ticketId);
+    const t = target();
+    await openTicket(t, "assign me", "Opening a new ticket");
+    await requestTicketEscalation(t);
+    await broker().drain();
+
+    const snapshot = await client().load(Ticket, t.stream || "");
     expect(snapshot.state.escalationId).toBeDefined();
   });
 });

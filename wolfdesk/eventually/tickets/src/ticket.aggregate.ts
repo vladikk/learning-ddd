@@ -1,28 +1,36 @@
-import { Aggregate, bind } from "@rotorsoft/eventually";
+import { Aggregate, bind, Invariant } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
 import * as errors from "./errors";
 import { Priority } from "./ticket.schemas";
 import * as types from "./types";
 
+// invariants
+const mustBeOpen: Invariant<types.Ticket> = {
+  description: "Ticket must be open",
+  valid: (state: types.Ticket) => !!state.productId && !state.closedById,
+};
+
 export const Ticket = (
-  id: string
+  stream: string
 ): Aggregate<types.Ticket, types.TicketCommands, types.TicketEvents> => ({
   description: "A support ticket",
-  stream: () => `Ticket-${id}`,
+  stream,
   schemas: types.schemas,
   init: () => ({
-    ticketId: "",
     productId: "",
+    userId: "",
     supportCategoryId: "",
     priority: Priority.Low,
     title: "",
     messages: {},
   }),
+
   reduce: {
     TicketOpened: (state, { data }) => {
       const { message, messageId, userId, ...other } = data;
       return {
         ...other,
+        userId,
         messages: {
           [messageId]: {
             messageId,
@@ -55,61 +63,70 @@ export const Ticket = (
     TicketResolved: (state, { data }) => ({ ...state, ...data }),
   },
 
-  // commands handlers
+  given: {
+    CloseTicket: [mustBeOpen],
+    AssignTicket: [mustBeOpen],
+    AddMessage: [mustBeOpen],
+    RequestTicketEscalation: [mustBeOpen],
+    EscalateTicket: [mustBeOpen],
+    ReassignTicket: [mustBeOpen],
+    MarkMessageDelivered: [mustBeOpen],
+    AcknowledgeMessage: [mustBeOpen],
+    MarkTicketResolved: [mustBeOpen],
+  },
+
   on: {
-    OpenTicket: (data, state) => {
-      if (state.ticketId)
-        throw new errors.TicketCannotOpenTwiceError(state.ticketId);
+    OpenTicket: (data, state, actor) => {
+      if (state.productId) throw new errors.TicketCannotOpenTwiceError(stream);
       return Promise.resolve([
-        bind("TicketOpened", { ...data, messageId: randomUUID() }),
+        bind("TicketOpened", {
+          ...data,
+          userId: actor?.id,
+          messageId: randomUUID(),
+        }),
       ]);
     },
-    CloseTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketCannotCloseTwiceError(state.ticketId);
-      return Promise.resolve([bind("TicketClosed", data)]);
+    CloseTicket: (data, state, actor) => {
+      return Promise.resolve([
+        bind("TicketClosed", { ...data, closedById: actor?.id || "" }),
+      ]);
     },
     AssignTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
       return Promise.resolve([bind("TicketAssigned", data)]);
     },
-    AddMessage: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
+    AddMessage: (data, state, actor) => {
+      // only owner or assigned agent can add messages
+      if (!(state.userId === actor?.id || state.agentId === actor?.id))
+        throw new errors.UnauthorizedError(stream, actor?.id || "");
 
-      // TODO: invariants
-      // only owners or agents can add new messages
+      // TODO: other invariants
 
       return Promise.resolve([
-        bind("MessageAdded", { ...data, messageId: randomUUID() }),
+        bind("MessageAdded", {
+          ...data,
+          from: actor?.id,
+          messageId: randomUUID(),
+        }),
       ]);
     },
-    RequestTicketEscalation: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
-
-      // TODO: invariants
+    RequestTicketEscalation: (data, state, actor) => {
       // escalation can only be requested by owner after window expired
+      if (state.userId != actor?.id)
+        throw new errors.UnauthorizedError(stream, actor?.id || "");
+      if (state.escalateAfter && state.escalateAfter > new Date())
+        throw new errors.TicketEscalationError(stream, actor?.id || "");
+
+      // TODO: other invariants
 
       return Promise.resolve([
-        bind("TicketEscalationRequested", { ...data, requestId: randomUUID() }),
+        bind("TicketEscalationRequested", {
+          ...data,
+          requestedById: actor?.id || "",
+          requestId: randomUUID(),
+        }),
       ]);
     },
     EscalateTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
-
       // TODO: invariants
       // only if ticket has not been escalated before?
 
@@ -118,48 +135,38 @@ export const Ticket = (
       ]);
     },
     ReassignTicket: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
-
       // TODO: invariants
       // is escalated and remaining time pct < .5 and no message acknowledged by agent
 
       return Promise.resolve([bind("TicketReassigned", { ...data })]);
     },
     MarkMessageDelivered: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
       if (!state.messages[data.messageId])
         throw new errors.MessageNotFoundError(data.messageId);
       return Promise.resolve([bind("MessageDelivered", { ...data })]);
     },
-    AcknowledgeMessage: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
-      if (!state.messages[data.messageId])
-        throw new errors.MessageNotFoundError(data.messageId);
+    AcknowledgeMessage: (data, state, actor) => {
+      const msg = state.messages[data.messageId];
+      if (!msg) throw new errors.MessageNotFoundError(data.messageId);
 
-      // TODO: invariants
-      // message can only be acknowledged by receiver?
+      // message can only be acknowledged by receiver
+      if (msg.to !== actor?.id)
+        throw new errors.UnauthorizedError(stream, actor?.id || "");
+
+      // TODO: other invariants
 
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
-    MarkTicketResolved: (data, state) => {
-      if (!state.ticketId)
-        throw new errors.TicketIsNotOpenError(state.ticketId);
-      if (state.closedById)
-        throw new errors.TicketIsClosedError(state.ticketId);
-
-      // TODO: invariants
+    MarkTicketResolved: (data, state, actor) => {
       // ticket can only be resolved by agent or owner?
+      if (!(state.userId === actor?.id || state.agentId === actor?.id))
+        throw new errors.UnauthorizedError(stream, actor?.id || "");
 
-      return Promise.resolve([bind("TicketResolved", { ...data })]);
+      // TODO: more invariants
+
+      return Promise.resolve([
+        bind("TicketResolved", { ...data, resolvedById: actor?.id || "" }),
+      ]);
     },
   },
 });
