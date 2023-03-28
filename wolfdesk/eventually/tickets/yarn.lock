@@ -570,9 +570,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.2.3.tgz#8df88afc37696057ac6e08c928cfac07777f1c4b"
-  integrity sha512-zeZJBwx9sgxUwKFWxXivvdq779EyfnHCl9GDx7lmOmS5JVHhs7yZ4ZX3Y608qSZM+qO2B3xJAodPencLBKMkvQ==
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.2.4.tgz#9a434c20da23e1545582f574d0b96fb7fc8cd6e0"
+  integrity sha512-M701XrAdhzoKLYwIuC/ShZJKMs62s2jum3hu2HCLIRrbK8LPMznI2nLVF6ORaEpPgBHuMeDO1HosMw8y75edBg==
   dependencies:
     "@anatine/zod-openapi" "^1.12.0"
     "@rotorsoft/eventually" "^5"
@@ -591,9 +591,9 @@
     zod "^3.21.4"
 
 "@rotorsoft/eventually@^5", "@rotorsoft/eventually@^5.0":
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.2.2.tgz#1790cbab0dcfdb0de9553880e35d9fd538fb2a15"
-  integrity sha512-NKVFFB8dywtDOyA4AnIFn7HmMx2xgPpg9VkF9Tl0g/YPnQI2TWHwaYaqmpmpvfiHwvt2S1TxST5wxLPuCVVSAg==
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually/-/eventually-5.2.3.tgz#f49ec10f1a2dac2f759f1d1b3c114b8c22f80626"
+  integrity sha512-9DX0ezkVgC8njQux1KuhG8NEcoQjianLgXDF/FRyPcTLwUieYqgXEs1o4Au5bb+jAWdbfHzaL4BmHgZBtw1qhA==
   dependencies:
     deepmerge "^4.3.0"
     dotenv "^16.0.3"

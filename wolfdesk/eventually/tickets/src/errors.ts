@@ -14,13 +14,6 @@ export class MessageNotFoundError extends Error {
   }
 }
 
-export class UnauthorizedError extends Error {
-  constructor(public ticketId: string, public userId: string) {
-    super("User unauthorized");
-    this.name = TicketError;
-  }
-}
-
 export class TicketEscalationError extends Error {
   constructor(public ticketId: string, public requestedById: string) {
     super("Cannot escalate before due date");

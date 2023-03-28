@@ -1,13 +1,28 @@
-import { Aggregate, bind, Invariant } from "@rotorsoft/eventually";
+import {
+  Aggregate,
+  bind,
+  Invariant,
+  InvariantError,
+} from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
 import * as errors from "./errors";
 import { Priority } from "./ticket.schemas";
 import * as types from "./types";
 
-// invariants
 const mustBeOpen: Invariant<types.Ticket> = {
   description: "Ticket must be open",
-  valid: (state: types.Ticket) => !!state.productId && !state.closedById,
+  valid: (state) => !!state.productId && !state.closedById,
+};
+
+const mustBeUser: Invariant<types.Ticket> = {
+  description: "Must be the owner",
+  valid: (state, actor) => state.userId === actor?.id,
+};
+
+const mustBeUserOrAgent: Invariant<types.Ticket> = {
+  description: "Must be owner or assigned agent",
+  valid: (state, actor) =>
+    state.userId === actor?.id || state.agentId === actor?.id,
 };
 
 export const Ticket = (
@@ -66,13 +81,13 @@ export const Ticket = (
   given: {
     CloseTicket: [mustBeOpen],
     AssignTicket: [mustBeOpen],
-    AddMessage: [mustBeOpen],
-    RequestTicketEscalation: [mustBeOpen],
+    AddMessage: [mustBeOpen, mustBeUserOrAgent],
+    RequestTicketEscalation: [mustBeOpen, mustBeUser],
     EscalateTicket: [mustBeOpen],
     ReassignTicket: [mustBeOpen],
     MarkMessageDelivered: [mustBeOpen],
     AcknowledgeMessage: [mustBeOpen],
-    MarkTicketResolved: [mustBeOpen],
+    MarkTicketResolved: [mustBeOpen, mustBeUserOrAgent],
   },
 
   on: {
@@ -95,10 +110,6 @@ export const Ticket = (
       return Promise.resolve([bind("TicketAssigned", data)]);
     },
     AddMessage: (data, state, actor) => {
-      // only owner or assigned agent can add messages
-      if (!(state.userId === actor?.id || state.agentId === actor?.id))
-        throw new errors.UnauthorizedError(stream, actor?.id || "");
-
       // TODO: other invariants
 
       return Promise.resolve([
@@ -110,9 +121,7 @@ export const Ticket = (
       ]);
     },
     RequestTicketEscalation: (data, state, actor) => {
-      // escalation can only be requested by owner after window expired
-      if (state.userId != actor?.id)
-        throw new errors.UnauthorizedError(stream, actor?.id || "");
+      // escalation can only be requested after window expired
       if (state.escalateAfter && state.escalateAfter > new Date())
         throw new errors.TicketEscalationError(stream, actor?.id || "");
 
@@ -151,17 +160,18 @@ export const Ticket = (
 
       // message can only be acknowledged by receiver
       if (msg.to !== actor?.id)
-        throw new errors.UnauthorizedError(stream, actor?.id || "");
+        throw new InvariantError<types.TicketCommands>(
+          "AcknowledgeMessage",
+          data,
+          { stream, actor },
+          "Must be receiver to ack"
+        );
 
       // TODO: other invariants
 
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
     MarkTicketResolved: (data, state, actor) => {
-      // ticket can only be resolved by agent or owner?
-      if (!(state.userId === actor?.id || state.agentId === actor?.id))
-        throw new errors.UnauthorizedError(stream, actor?.id || "");
-
       // TODO: more invariants
 
       return Promise.resolve([
