@@ -1,16 +1,11 @@
-import { bind, Policy } from "@rotorsoft/eventually";
-import * as types from "./types";
-import { TicketEscalationRequested } from "./ticket.event.schemas";
+import { bind, InferPolicy } from "@rotorsoft/eventually";
+import { RequestedEscalationSchemas } from "./schemas";
 
-export const RequestedEscalation = (): Policy<
-  Pick<types.TicketCommands, "EscalateTicket">,
-  Pick<types.TicketEvents, "TicketEscalationRequested">
+export const RequestedEscalation = (): InferPolicy<
+  typeof RequestedEscalationSchemas
 > => ({
   description: "Escalates ticket upon request",
-  schemas: {
-    events: { TicketEscalationRequested },
-    commands: { EscalateTicket: "Escalates ticket" },
-  },
+  schemas: RequestedEscalationSchemas,
   on: {
     TicketEscalationRequested: async ({ stream, data }) => {
       return Promise.resolve(

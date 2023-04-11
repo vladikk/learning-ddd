@@ -1,28 +1,23 @@
-import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
+import { AutomaticEscalationSchemas, TicketProjection } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
-import { EscalationCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection, Tickets } from "./ticket.projector";
-import * as types from "./types";
+import { Tickets } from "./ticket.projector";
 import { rescheduleCronEvent } from "./utils";
 
 export const AUTO_ESCALATION_ID = "00000000-0000-1000-0000-100000000000";
 const BATCH_SIZE = 10;
 
-export const AutomaticEscalation = (): Policy<
-  Pick<types.TicketCommands, "EscalateTicket">,
-  { EscalationCronTriggered: Empty }
+export const AutomaticEscalation = (): InferPolicy<
+  typeof AutomaticEscalationSchemas
 > => ({
   description: "Escalates ticket when expected response time is not met",
-  schemas: {
-    events: { EscalationCronTriggered },
-    commands: { EscalateTicket: "Escalates ticket" },
-  },
+  schemas: AutomaticEscalationSchemas,
   on: {
     EscalationCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired escalation time
-        const expired: Array<TicketProjection> = [];
+        const expired: Array<Infer<typeof TicketProjection>> = [];
         await client().read(
           Tickets,
           {

@@ -1,6 +1,6 @@
+import { Infer } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
-import { TicketProjection } from "../ticket.projector";
-import { Priority } from "../ticket.schemas";
+import { Priority, TicketProjection } from "../schemas";
 
 export type AvailableAgent = {
   agentId: string;
@@ -21,7 +21,9 @@ export const assignAgent = (
 };
 
 // TODO: find best agent for this ticket - reassignment
-export const reassignAgent = (ticket: TicketProjection): AvailableAgent => {
+export const reassignAgent = (
+  ticket: Infer<typeof TicketProjection>
+): AvailableAgent => {
   return {
     agentId: randomUUID(),
     reassignAfter: new Date(Date.now() + 100000),

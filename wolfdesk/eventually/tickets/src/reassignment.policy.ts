@@ -1,27 +1,20 @@
-import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
+import { ReassingmentSchemas, TicketProjection } from "./schemas";
 import { reassignAgent } from "./services/agent";
 import { Ticket } from "./ticket.aggregate";
-import { ReassignmentCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection, Tickets } from "./ticket.projector";
-import * as types from "./types";
+import { Tickets } from "./ticket.projector";
 import { rescheduleCronEvent } from "./utils";
 
 const BATCH_SIZE = 10;
 
-export const Reassingment = (): Policy<
-  Pick<types.TicketCommands, "ReassignTicket">,
-  { ReassignmentCronTriggered: Empty }
-> => ({
+export const Reassingment = (): InferPolicy<typeof ReassingmentSchemas> => ({
   description: "Reassigns ticket after agent inactivity period",
-  schemas: {
-    events: { ReassignmentCronTriggered },
-    commands: { ReassignTicket: "Reassigns ticket" },
-  },
+  schemas: ReassingmentSchemas,
   on: {
     ReassignmentCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired agent response window
-        const expired: Array<TicketProjection> = [];
+        const expired: Array<Infer<typeof TicketProjection>> = [];
         await client().read(
           Tickets,
           {

@@ -1,42 +1,9 @@
-import { client, Projector } from "@rotorsoft/eventually";
-import { z } from "zod";
-import { Priority } from "./ticket.schemas";
-import { schemas, TicketEvents } from "./types";
+import { client, InferProjector } from "@rotorsoft/eventually";
+import { TicketProjectorSchemas } from "./schemas";
 
-const Schema = z.object({
-  // ids
-  id: z.string().uuid(),
-  productId: z.string().uuid(),
-  supportCategoryId: z.string().uuid(),
-  escalationId: z.string().uuid().optional(),
-  // props
-  priority: z.nativeEnum(Priority),
-  title: z.string().min(1),
-  messages: z.number().int(),
-  // user ids
-  userId: z.string().uuid(),
-  agentId: z.string().uuid().optional(),
-  resolvedById: z.string().uuid().optional(),
-  closedById: z.string().uuid().optional(),
-  // expiration windows
-  reassignAfter: z.date().optional(),
-  escalateAfter: z.date().optional(),
-  closeAfter: z.date().optional(),
-});
-export type TicketProjection = z.infer<typeof Schema>;
-
-export const Tickets = (): Projector<
-  TicketProjection,
-  Omit<
-    TicketEvents,
-    "TicketEscalationRequested" | "MessageDelivered" | "MessageRead"
-  >
-> => ({
+export const Tickets = (): InferProjector<typeof TicketProjectorSchemas> => ({
   description: "Projects ticket events into a flat read model",
-  schemas: {
-    state: Schema,
-    events: schemas.events,
-  },
+  schemas: TicketProjectorSchemas,
   on: {
     TicketOpened: ({ stream, data }) => {
       const { message, messageId, ...other } = data;
@@ -132,5 +99,8 @@ export const Tickets = (): Projector<
         ],
       });
     },
+    TicketEscalationRequested: () => Promise.resolve({}),
+    MessageDelivered: () => Promise.resolve({}),
+    MessageRead: () => Promise.resolve({}),
   },
 });

@@ -7,10 +7,6 @@ import {
   store,
 } from "@rotorsoft/eventually";
 import { ExpressApp, sse } from "@rotorsoft/eventually-express";
-import {
-  PostgresProjectorStore,
-  PostgresStore,
-} from "@rotorsoft/eventually-pg";
 import { NextFunction, Request, Response } from "express";
 import { engine } from "express-handlebars";
 import { randomUUID } from "node:crypto";
@@ -21,40 +17,14 @@ import { Closing } from "./closing.policy";
 import { Delivery } from "./delivery.policy";
 import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
+import { ticketProjectorStore } from "./stores";
 import { Ticket } from "./ticket.aggregate";
-import { TicketProjection, Tickets } from "./ticket.projector";
+import { Tickets } from "./ticket.projector";
 
 bootstrap(async () => {
-  await store(PostgresStore("tickets"));
+  // TODO: move to CI/CD pipeline as migration step
   await store().seed();
-
-  const pgTicketProjectorStore = PostgresProjectorStore<TicketProjection>(
-    "tickets_projection",
-    {
-      id: 'varchar(100) COLLATE pg_catalog."default" NOT NULL PRIMARY KEY',
-      productId: 'varchar(100) COLLATE pg_catalog."default"',
-      supportCategoryId: 'varchar(100) COLLATE pg_catalog."default"',
-      escalationId: 'varchar(100) COLLATE pg_catalog."default"',
-
-      priority: 'varchar(10) COLLATE pg_catalog."default"',
-      title: 'varchar(100) COLLATE pg_catalog."default"',
-      messages: "integer",
-
-      userId: 'varchar(100) COLLATE pg_catalog."default"',
-      agentId: 'varchar(100) COLLATE pg_catalog."default"',
-      resolvedById: 'varchar(100) COLLATE pg_catalog."default"',
-      closedById: 'varchar(100) COLLATE pg_catalog."default"',
-
-      reassignAfter: "timestamptz",
-      escalateAfter: "timestamptz",
-      closeAfter: "timestamptz",
-    },
-    `
-    CREATE INDEX IF NOT EXISTS tickets_user_ix ON public.tickets_projection USING btree ("userId" ASC) TABLESPACE pg_default;
-    CREATE INDEX IF NOT EXISTS tickets_agent_ix ON public.tickets_projection USING btree ("agentId" ASC) TABLESPACE pg_default;
-    `
-  );
-  await pgTicketProjectorStore.seed();
+  await ticketProjectorStore.seed();
 
   // mock auth middleware
   const userId = randomUUID();
@@ -79,7 +49,7 @@ bootstrap(async () => {
     .with(RequestedEscalation)
     .with(AutomaticEscalation, { scope: Scope.public })
     .with(Closing, { scope: Scope.public })
-    .with(Tickets, { store: pgTicketProjectorStore })
+    .with(Tickets, { store: ticketProjectorStore })
     .build([mockedAuth]);
 
   //-------------------------------------------------------------------------------------------------------------------
@@ -98,7 +68,7 @@ bootstrap(async () => {
     res.render("playground");
   });
 
-  const watching = sse<TicketProjection>("ticket");
+  const watching = sse("ticket");
   express.get("/ticket-watch", (req, res) => {
     watching.push(req, res);
   });

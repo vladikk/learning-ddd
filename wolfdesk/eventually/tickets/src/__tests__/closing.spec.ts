@@ -1,10 +1,10 @@
-import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
-import { Ticket } from "../ticket.aggregate";
+import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Chance } from "chance";
-import { openTicket, target } from "./commands";
 import { Closing } from "../closing.policy";
+import { Priority } from "../schemas";
+import { Ticket } from "../ticket.aggregate";
 import { Tickets } from "../ticket.projector";
-import { Priority } from "../ticket.schemas";
+import { openTicket, target } from "./commands";
 
 const chance = new Chance();
 
