@@ -1,27 +1,20 @@
-import { client, Empty, Operator, Policy } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
+import { ClosingSchemas, TicketProjection } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
-import { CheckInactiveTicketsCronTriggered } from "./ticket.event.schemas";
-import { TicketProjection, Tickets } from "./ticket.projector";
-import * as types from "./types";
+import { Tickets } from "./ticket.projector";
 import { rescheduleCronEvent } from "./utils";
 
 export const CLOSING_ID = "00000000-0000-1000-0000-200000000000";
 const BATCH_SIZE = 10;
 
-export const Closing = (): Policy<
-  Pick<types.TicketCommands, "CloseTicket">,
-  { CheckInactiveTicketsCronTriggered: Empty }
-> => ({
+export const Closing = (): InferPolicy<typeof ClosingSchemas> => ({
   description: "Closes tickets after inactivity period",
-  schemas: {
-    events: { CheckInactiveTicketsCronTriggered },
-    commands: { CloseTicket: "Closes ticket" },
-  },
+  schemas: ClosingSchemas,
   on: {
     CheckInactiveTicketsCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired inactivity window
-        const expired: Array<TicketProjection> = [];
+        const expired: Array<Infer<typeof TicketProjection>> = [];
         await client().read(
           Tickets,
           {

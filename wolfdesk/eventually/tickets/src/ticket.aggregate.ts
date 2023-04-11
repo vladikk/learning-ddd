@@ -1,25 +1,27 @@
 import {
-  Aggregate,
   bind,
+  Infer,
+  InferAggregate,
   Invariant,
   InvariantError,
 } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
 import * as errors from "./errors";
-import { Priority } from "./ticket.schemas";
-import * as types from "./types";
+import { Priority, TicketSchemas } from "./schemas";
 
-const mustBeOpen: Invariant<types.Ticket> = {
+type TicketState = Infer<typeof TicketSchemas.state>;
+
+const mustBeOpen: Invariant<TicketState> = {
   description: "Ticket must be open",
   valid: (state) => !!state.productId && !state.closedById,
 };
 
-const mustBeUser: Invariant<types.Ticket> = {
+const mustBeUser: Invariant<TicketState> = {
   description: "Must be the owner",
   valid: (state, actor) => state.userId === actor?.id,
 };
 
-const mustBeUserOrAgent: Invariant<types.Ticket> = {
+const mustBeUserOrAgent: Invariant<TicketState> = {
   description: "Must be owner or assigned agent",
   valid: (state, actor) =>
     state.userId === actor?.id || state.agentId === actor?.id,
@@ -27,10 +29,10 @@ const mustBeUserOrAgent: Invariant<types.Ticket> = {
 
 export const Ticket = (
   stream: string
-): Aggregate<types.Ticket, types.TicketCommands, types.TicketEvents> => ({
+): InferAggregate<typeof TicketSchemas> => ({
   description: "A support ticket",
   stream,
-  schemas: types.schemas,
+  schemas: TicketSchemas,
   init: () => ({
     productId: "",
     userId: "",
@@ -41,7 +43,7 @@ export const Ticket = (
   }),
 
   reduce: {
-    TicketOpened: (state, { data }) => {
+    TicketOpened: (_, { data }) => {
       const { message, messageId, userId, ...other } = data;
       return {
         ...other,
@@ -52,7 +54,7 @@ export const Ticket = (
             from: userId,
             body: message,
             attachments: {},
-          } as types.Message,
+          },
         },
       };
     },
@@ -160,7 +162,7 @@ export const Ticket = (
 
       // message can only be acknowledged by receiver
       if (msg.to !== actor?.id)
-        throw new InvariantError<types.TicketCommands>(
+        throw new InvariantError(
           "AcknowledgeMessage",
           data,
           { stream, actor },

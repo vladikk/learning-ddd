@@ -1,17 +1,10 @@
-import { bind, Policy } from "@rotorsoft/eventually";
-import * as types from "./types";
-import { MessageAdded } from "./ticket.event.schemas";
+import { bind, InferPolicy } from "@rotorsoft/eventually";
+import { DeliverySchemas } from "./schemas";
 import { deliverMessage } from "./services/notification";
 
-export const Delivery = (): Policy<
-  Pick<types.TicketCommands, "MarkMessageDelivered">,
-  Pick<types.TicketEvents, "MessageAdded">
-> => ({
+export const Delivery = (): InferPolicy<typeof DeliverySchemas> => ({
   description: "Delivers new messages",
-  schemas: {
-    events: { MessageAdded },
-    commands: { MarkMessageDelivered: "Marks message as delivered" },
-  },
+  schemas: DeliverySchemas,
   on: {
     MessageAdded: async ({ stream, data }) => {
       await deliverMessage(data);

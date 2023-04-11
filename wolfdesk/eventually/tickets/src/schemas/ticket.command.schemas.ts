@@ -1,6 +1,6 @@
 import { ZodEmpty } from "@rotorsoft/eventually";
 import { z } from "zod";
-import { Attachment, Priority } from "./ticket.schemas";
+import { Attachment, Priority } from "./schemas";
 
 export const OpenTicket = z
   .object({

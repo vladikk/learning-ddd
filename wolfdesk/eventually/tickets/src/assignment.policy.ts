@@ -1,17 +1,10 @@
-import { bind, Policy } from "@rotorsoft/eventually";
-import * as types from "./types";
-import { TicketOpened } from "./ticket.event.schemas";
+import { bind, InferPolicy } from "@rotorsoft/eventually";
+import { AssignmentSchemas } from "./schemas";
 import { assignAgent } from "./services/agent";
 
-export const Assignment = (): Policy<
-  Pick<types.TicketCommands, "AssignTicket">,
-  Pick<types.TicketEvents, "TicketOpened">
-> => ({
+export const Assignment = (): InferPolicy<typeof AssignmentSchemas> => ({
   description: "Assigns agents to tickets using autopilot's AI",
-  schemas: {
-    events: { TicketOpened },
-    commands: { AssignTicket: "Assigns agent to open ticket" },
-  },
+  schemas: AssignmentSchemas,
   on: {
     TicketOpened: ({ stream, data }) => {
       const agent = assignAgent(data.supportCategoryId, data.priority);

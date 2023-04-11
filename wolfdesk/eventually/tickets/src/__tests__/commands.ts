@@ -1,7 +1,7 @@
 import { client, CommandTarget } from "@rotorsoft/eventually";
 import { Chance } from "chance";
+import { Priority } from "../schemas";
 import { Ticket } from "../ticket.aggregate";
-import { Priority } from "../ticket.schemas";
 const chance = new Chance();
 const DAY = 24 * 60 * 60 * 1000;
 const oneDay = () => new Date(Date.now() + DAY);
