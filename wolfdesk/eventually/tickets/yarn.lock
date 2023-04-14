@@ -563,9 +563,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@rotorsoft/eventually-express@^5.0":
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.3.2.tgz#0f4c2951d0bbb24a68bf8cb7531f5a787a38603c"
-  integrity sha512-NqsSpfGX0ncXdvqvySzieEVzNoh89DTRYRypy8AkT7ghK/iuFlCN+ap9Pe8KzfMzAdV/RlqG2GDIDmsK0yTCzA==
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-express/-/eventually-express-5.3.3.tgz#b021431231bb59b96e4e994b5f329093a44dc25e"
+  integrity sha512-FURBBwyk2GBG1AHIRnMt0Tz7YZ0h3IHn1QVy5knczlVeigZuDjMy4JG7Rm6AwrahAka3Yvv+UTvNfor5KA3w1Q==
   dependencies:
     "@rotorsoft/eventually" "^5"
     axios "^1.3.5"
@@ -1389,9 +1389,9 @@ expect@^29.0.0, expect@^29.5.0:
     jest-util "^29.5.0"
 
 express-handlebars@^7.0.2:
-  version "7.0.5"
-  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-7.0.5.tgz#a864fb2a672e8520955d7375e2218d8a85ae1dd6"
-  integrity sha512-9OuDkxrNq9fkbqwKmUr30TEobdlDyhawaod6+H6nz3rUXpzDjyoRt3LrSScscbPikQFs1zMy/52Ns+WosWVLhg==
+  version "7.0.6"
+  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-7.0.6.tgz#df4f09bb45387e50a61011860968f131f0940b14"
+  integrity sha512-f1azlphtOp3fp8+dfbcqebQ+tdq9VOXG4TmafJ756n9CjoItW7Mqn3KCZ0BjGdgZ7+ktYHZQWV4oCjiNhSuSeg==
   dependencies:
     glob "^10.0.0"
     graceful-fs "^4.2.11"
@@ -2203,9 +2203,9 @@ lru-cache@^6.0.0:
     yallist "^4.0.0"
 
 lru-cache@^9.0.0:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-9.0.1.tgz#ac061ed291f8b9adaca2b085534bb1d3b61bef83"
-  integrity sha512-C8QsKIN1UIXeOs3iWmiZ1lQY+EnKDojWd37fXy1aSbJvH4iSma1uy2OWuoB3m4SYRli5+CUjDv3Dij5DVoetmg==
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-9.0.2.tgz#97f13c6b20532fba9bae821c39cd7d471f65119d"
+  integrity sha512-7zYMKApzQ9qQE13xQUzbXVY3p2C5lh+9V+bs8M9fRf1TF59id+8jkljRWtIPfBfNP4yQAol5cqh/e8clxatdXw==
 
 make-dir@^3.0.0:
   version "3.1.0"
@@ -2389,9 +2389,9 @@ onetime@^5.1.2:
     mimic-fn "^2.1.0"
 
 openapi3-ts@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-4.0.4.tgz#65cebc1438ca1d933bfacfd2c15d6e2ee933901a"
-  integrity sha512-06//rVJH/6SUElqB8N/5thFTIzO/lT9nrJAXIHoicvKsDw13EIskmX74Ve+Uhgn95Jh8y7kDIU9G+zo9KWWXvA==
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-4.1.0.tgz#da001e51a5032820a26e5034c4bc624dee131c09"
+  integrity sha512-DlUY4JURRUPBkqxljsS5XtL4Txs9dz/vifHaHP4WHtIgjkv/vjae3qDWs5pXAOm73PctkL5Z+C20mj7rWnG2nA==
   dependencies:
     yaml "^2.2.1"
 
