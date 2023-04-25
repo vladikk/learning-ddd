@@ -1,4 +1,4 @@
-import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
 import { ReassingmentSchemas, TicketProjection } from "./schemas";
 import { reassignAgent } from "./services/agent";
 import { Ticket } from "./ticket.aggregate";
@@ -19,7 +19,7 @@ export const Reassingment = (): InferPolicy<typeof ReassingmentSchemas> => ({
           Tickets,
           {
             where: {
-              reassignAfter: { operator: Operator.lt, value: new Date() },
+              reassignAfter: { operator: "lt", value: new Date() },
             },
             limit: BATCH_SIZE,
           },

@@ -1,4 +1,4 @@
-import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
+import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import { assignTicket, openTicket, target } from "./commands";

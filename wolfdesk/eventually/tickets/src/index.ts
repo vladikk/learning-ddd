@@ -1,11 +1,4 @@
-import {
-  Actor,
-  app,
-  bootstrap,
-  client,
-  Scope,
-  store,
-} from "@rotorsoft/eventually";
+import { Actor, app, bootstrap, client, store } from "@rotorsoft/eventually";
 import { ExpressApp, sse } from "@rotorsoft/eventually-express";
 import { NextFunction, Request, Response } from "express";
 import { engine } from "express-handlebars";
@@ -44,11 +37,11 @@ bootstrap(async () => {
   const express = app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
-    .with(Reassingment, { scope: Scope.public })
+    .with(Reassingment, { scope: "public" })
     .with(Delivery)
     .with(RequestedEscalation)
-    .with(AutomaticEscalation, { scope: Scope.public })
-    .with(Closing, { scope: Scope.public })
+    .with(AutomaticEscalation, { scope: "public" })
+    .with(Closing, { scope: "public" })
     .with(Tickets, { store: ticketProjectorStore })
     .build([mockedAuth]);
 

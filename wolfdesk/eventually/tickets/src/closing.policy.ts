@@ -1,4 +1,4 @@
-import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
 import { ClosingSchemas, TicketProjection } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
 import { Tickets } from "./ticket.projector";
@@ -19,7 +19,7 @@ export const Closing = (): InferPolicy<typeof ClosingSchemas> => ({
           Tickets,
           {
             where: {
-              closeAfter: { operator: Operator.lt, value: new Date() },
+              closeAfter: { operator: "lt", value: new Date() },
             },
             limit: BATCH_SIZE,
           },

@@ -1,4 +1,4 @@
-import { client, Infer, InferPolicy, Operator } from "@rotorsoft/eventually";
+import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
 import { AutomaticEscalationSchemas, TicketProjection } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
@@ -22,7 +22,7 @@ export const AutomaticEscalation = (): InferPolicy<
           Tickets,
           {
             where: {
-              escalateAfter: { operator: Operator.lt, value: new Date() },
+              escalateAfter: { operator: "lt", value: new Date() },
             },
             limit: BATCH_SIZE,
           },
