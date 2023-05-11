@@ -15,8 +15,23 @@ export class MessageNotFoundError extends Error {
 }
 
 export class TicketEscalationError extends Error {
-  constructor(public ticketId: string, public requestedById: string) {
-    super("Cannot escalate before due date");
+  constructor(
+    public ticketId: string,
+    public requestedById: string,
+    message: string
+  ) {
+    super(message);
+    this.name = TicketError;
+  }
+}
+
+export class TicketReassingmentError extends Error {
+  constructor(
+    public ticketId: string,
+    public requestedById: string,
+    message: string
+  ) {
+    super(message);
     this.name = TicketError;
   }
 }

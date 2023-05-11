@@ -31,6 +31,7 @@ describe("tickets projector", () => {
     await openTicket(t, title, message);
     await addMessage(t, "first message");
     await escalateTicket(t);
+    await broker().drain();
     await reassignTicket(t);
     await markTicketResolved(t);
     await closeTicket(t);

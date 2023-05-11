@@ -112,8 +112,6 @@ export const Ticket = (
       return Promise.resolve([bind("TicketAssigned", data)]);
     },
     AddMessage: (data, state, actor) => {
-      // TODO: other invariants
-
       return Promise.resolve([
         bind("MessageAdded", {
           ...data,
@@ -125,9 +123,11 @@ export const Ticket = (
     RequestTicketEscalation: (data, state, actor) => {
       // escalation can only be requested after window expired
       if (state.escalateAfter && state.escalateAfter > new Date())
-        throw new errors.TicketEscalationError(stream, actor?.id || "");
-
-      // TODO: other invariants
+        throw new errors.TicketEscalationError(
+          stream,
+          actor?.id || "",
+          "Cannot escalate before due date"
+        );
 
       return Promise.resolve([
         bind("TicketEscalationRequested", {
@@ -137,17 +137,44 @@ export const Ticket = (
         }),
       ]);
     },
-    EscalateTicket: (data, state) => {
-      // TODO: invariants
+    EscalateTicket: (data, state, actor) => {
       // only if ticket has not been escalated before?
+      if (state.escalationId)
+        throw new errors.TicketEscalationError(
+          stream,
+          actor?.id || "",
+          "Cannot escalate more than once"
+        );
 
       return Promise.resolve([
         bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
       ]);
     },
-    ReassignTicket: (data, state) => {
-      // TODO: invariants
-      // is escalated and remaining time pct < .5 and no message acknowledged by agent
+    ReassignTicket: (data, state, actor) => {
+      // is escalated
+      if (!state.escalationId || !state.reassignAfter)
+        throw new errors.TicketEscalationError(
+          stream,
+          actor?.id || "",
+          "Cannot reassign without escalation"
+        );
+      // after reassignment window
+      if (state.reassignAfter > new Date())
+        throw new errors.TicketReassingmentError(
+          stream,
+          actor?.id || "",
+          "Cannot reassign before due date"
+        );
+      // no message acknowledged by agent
+      const ackedByAgent = Object.values(state.messages).filter(
+        (msg) => msg.wasRead && msg.from === state.userId
+      ).length;
+      if (ackedByAgent)
+        throw new errors.TicketReassingmentError(
+          stream,
+          actor?.id || "",
+          "Cannot reassign after agent acknowledged"
+        );
 
       return Promise.resolve([bind("TicketReassigned", { ...data })]);
     },
@@ -169,13 +196,9 @@ export const Ticket = (
           "Must be receiver to ack"
         );
 
-      // TODO: other invariants
-
       return Promise.resolve([bind("MessageRead", { ...data })]);
     },
     MarkTicketResolved: (data, state, actor) => {
-      // TODO: more invariants
-
       return Promise.resolve([
         bind("TicketResolved", { ...data, resolvedById: actor?.id || "" }),
       ]);

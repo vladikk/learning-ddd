@@ -1,7 +1,7 @@
 import { app, broker, client, dispose } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
-import { assignTicket, openTicket, target } from "./commands";
+import { assignTicket, escalateTicket, openTicket, target } from "./commands";
 import { Reassingment } from "../reassignment.policy";
 import { Tickets } from "../ticket.projector";
 
@@ -23,6 +23,8 @@ describe("reassignment policy", () => {
 
     await openTicket(t, "assign me", "Opening a new ticket");
     await assignTicket(t, agentId, now, now);
+    await broker().drain();
+    await escalateTicket(t);
     await broker().drain();
 
     await client().event(Reassingment, {
