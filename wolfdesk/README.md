@@ -1,8 +1,18 @@
-# Business Domain
+# WolfDesk
+
+Here, you'll find community-generated implementations of the imaginary company, WolfDesk, that is used for illustrating key concepts in "Learning Domain-Driven Design."
+
+## Get Involved
+
+1. **Contribute your expertise**: If your favorite technology stack is missing, I'd love for you to join the challenge and submit your own implementation of WolfDesk. Your contribution will help enrich the collective learning experience.
+
+2. **Collaborate and improve**: As a community-driven project, you are welcome to review the existing codebases and offer your insights for improvement.
+
+## Business Domain
 
 **WolfDesk provides a help desk tickets management system as a service**. If your startup company needs to provide support to your customers, with WolfDesk's solution you can get up and running in no time
 
-## Requirements
+### Requirements
 
 1. WolfDesk uses a different payment model than its competitors
   
@@ -52,47 +62,22 @@
 
     b. It has to leverage serverless computing, which allows it to elastically scale its compute resources based on the operations on active tickets
 
-## Core Subdomains
+### Core Subdomains
 
-1. Ticket lifecycle management algorithm that is intended to close tickets and thus encourage users to open new ones (R2a)
-2. Fraud detection system to prevent abuse of its business model (R2b)
-3. Support autopilot that both eases the tenants' support agents' work and further reduces the tickets' lifespan (R3)
+1. Ticket lifecycle management algorithm that is intended to close tickets and thus encourage users to open new ones
+2. Fraud detection system to prevent abuse of its business model
+3. Support autopilot that both eases the tenants' support agents' work and further reduces the tickets' lifespan
 
-## Generic Subdomains
+### Generic Subdomains
 
-1. "Industry Standard" ways of authenticating and authorizing users (R4a)
-2. Using external providers for authentication and authorization (SSO) (R4b)
-3. The serverless compute infrastructure the company leverages to ensure elastic scalability and minimize the compute costs of onboarding new tenants (R7)
+1. "Industry Standard" ways of authenticating and authorizing users
+2. Using external providers for authentication and authorization (SSO)
+3. The serverless compute infrastructure the company leverages to ensure elastic scalability and minimize the compute costs of onboarding new tenants
 
-## Supporting Subdomains
+### Supporting Subdomains
 
 1. Tenant onboarding
-2. Billing (R1)
-3. Management of a tenant's ticket categories (R5a)
-4. Management of tenant's products, regarding which the customers can open support tickets (R5b)
-5. Entry of a tenant's support agent's work schedules (R6)
-
-## Ubiquitous Language  
-
-- Customers are the external actors creating new tickets, and are associated to tenants
-- Agents are external actors acting on created tickets, and are associated to tenants
-- Tenants are the "internal" customers of the system, and manage their own agents and customers
-- There is an onboarding process for tenants
-- There is an administration interface for system administrators and tenants
-- Charging model based on the number of tickets opened during a charging period
-- The ticket lifecycle management algorithm ensures that inactive tickets are automatically closed
-- The fraud detection algorithm prevents tenants from abusing the business model
-- The support autopilot functionality tries to find solutions for new tickets automatically
-- A ticket belongs to a support category and it associated with a product for which the tenant provides support
-- A support agent can only process tickets during their work time, which is defines by their shift schedules
-
-## Other Considerations
-
-- Ticket escalation can only be requested by the customer owning the ticket (when the SLA has been violated)
-- Customers and agents can add messages to the ticket
-- Messages can optionally have a list of attachments - attachments cannot be added independently
-- Customers and agents can acknowledge messages entered by the other side of the conversation
-- Customers and agents can mark the ticket resolved
-- Tenants can have a "very large" number of products to support - influence in aggregate boundary around products
-- Tenants can have a "very large" number of agents - influence in aggregate boundary around agents
-- Other tenant properties like categories, name, website, etc can be updated as a whole
+2. Billing
+3. Management of a tenant's ticket categories
+4. Management of tenant's products, regarding which the customers can open support tickets
+5. Entry of a tenant's support agent's work schedules
