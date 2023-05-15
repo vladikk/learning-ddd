@@ -580,9 +580,9 @@
     express "^4.18.2"
 
 "@rotorsoft/eventually-openapi@^0":
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-openapi/-/eventually-openapi-0.2.7.tgz#9f8a039afad332c89f95d3f722af2634cea8d932"
-  integrity sha512-OAwugCnLUYzQUCnjsmK8B/397fF7gdjNKwXB/1eTlxNE4D+zo9mJave20RCOj3gxuqYHfPHCRNPgd6Q2jDg4RA==
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@rotorsoft/eventually-openapi/-/eventually-openapi-0.2.8.tgz#370fd31a2cbeae4394bc913c4a16eb1a0f50d4df"
+  integrity sha512-NFOf8s9EyXVzyTIRP5XK2E0Zt78ssMHzPPabE/rI2jv2rgLG4LKFUmDo6eD2O8YBU+RR6/LUcqIRjbBoRveD1w==
   dependencies:
     "@rotorsoft/eventually" "^5"
     axios "^1.4.0"
@@ -764,9 +764,9 @@
   integrity sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==
 
 "@types/node@^18.13.0":
-  version "18.16.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.7.tgz#86d0ba2541f808cb78d4dc5d3e40242a349d6db8"
-  integrity sha512-MFg7ua/bRtnA1hYE3pVyWxGd/r7aMqjNOdHvlSsXV3n8iaeGKkOaPzpJh6/ovf4bEXWcojkeMJpTsq3mzXW4IQ==
+  version "18.16.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.9.tgz#e79416d778a8714597342bb87efb5a6e914f7a73"
+  integrity sha512-IeB32oIV4oGArLrd7znD2rkHQ6EDCM+2Sr76dJnrHwv9OHBTTM6nuDLK9bmikXzPa0ZlWMWtRGo/Uw4mrzQedA==
 
 "@types/prettier@^2.1.5":
   version "2.7.2"
