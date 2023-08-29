@@ -1,5 +1,5 @@
-import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
-import { ClosingSchemas, TicketProjection } from "./schemas";
+import { client, InferPolicy } from "@rotorsoft/eventually";
+import { ClosingSchemas } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
 import { Tickets } from "./ticket.projector";
 import { rescheduleCronEvent } from "./utils";
@@ -14,24 +14,19 @@ export const Closing = (): InferPolicy<typeof ClosingSchemas> => ({
     CheckInactiveTicketsCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired inactivity window
-        const expired: Array<Infer<typeof TicketProjection>> = [];
-        await client().read(
-          Tickets,
-          {
-            where: {
-              closeAfter: { operator: "lt", value: new Date() },
-            },
-            limit: BATCH_SIZE,
+        const expired = await client().read(Tickets, {
+          where: {
+            closeAfter: { lt: new Date() },
           },
-          (p) => expired.push(p.state)
-        );
+          limit: BATCH_SIZE,
+        });
         for (const ticket of expired) {
           await client().command(
             Ticket,
             "CloseTicket",
             {},
             {
-              stream: ticket.id,
+              stream: ticket.state.id,
               actor: { id: CLOSING_ID, name: "Closing", roles: [] },
             }
           );

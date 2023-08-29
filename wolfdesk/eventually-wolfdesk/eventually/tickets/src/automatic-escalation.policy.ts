@@ -1,6 +1,6 @@
-import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
+import { client, InferPolicy } from "@rotorsoft/eventually";
 import { randomUUID } from "crypto";
-import { AutomaticEscalationSchemas, TicketProjection } from "./schemas";
+import { AutomaticEscalationSchemas } from "./schemas";
 import { Ticket } from "./ticket.aggregate";
 import { Tickets } from "./ticket.projector";
 import { rescheduleCronEvent } from "./utils";
@@ -17,17 +17,12 @@ export const AutomaticEscalation = (): InferPolicy<
     EscalationCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired escalation time
-        const expired: Array<Infer<typeof TicketProjection>> = [];
-        await client().read(
-          Tickets,
-          {
-            where: {
-              escalateAfter: { operator: "lt", value: new Date() },
-            },
-            limit: BATCH_SIZE,
+        const expired = await client().read(Tickets, {
+          where: {
+            escalateAfter: { lt: new Date() },
           },
-          (p) => expired.push(p.state)
-        );
+          limit: BATCH_SIZE,
+        });
         for (const ticket of expired) {
           await client().command(
             Ticket,
@@ -37,7 +32,7 @@ export const AutomaticEscalation = (): InferPolicy<
               requestedById: AUTO_ESCALATION_ID,
             },
             {
-              stream: ticket.id,
+              stream: ticket.state.id,
             }
           );
         }

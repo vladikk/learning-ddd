@@ -17,7 +17,7 @@ describe("assignment policy", () => {
     await openTicket(t, "assign me", "Opening a new ticket");
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, t.stream || "", false);
+    const snapshot = await client().load(Ticket, t.stream!);
     expect(snapshot.state.agentId).toBeDefined();
   });
 });

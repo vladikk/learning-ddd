@@ -1,4 +1,4 @@
-import { bind, InferPolicy } from "@rotorsoft/eventually";
+import { cmd, InferPolicy } from "@rotorsoft/eventually";
 import { AssignmentSchemas } from "./schemas";
 import { assignAgent } from "./services/agent";
 
@@ -8,7 +8,7 @@ export const Assignment = (): InferPolicy<typeof AssignmentSchemas> => ({
   on: {
     TicketOpened: ({ stream, data }) => {
       const agent = assignAgent(data.supportCategoryId, data.priority);
-      return Promise.resolve(bind("AssignTicket", agent, { stream }));
+      return cmd("AssignTicket", agent, stream);
     },
   },
 });

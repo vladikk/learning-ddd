@@ -18,7 +18,7 @@ describe("delivery policy", () => {
     await addMessage(t, "the body");
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, t.stream || "", false);
+    const snapshot = await client().load(Ticket, t.stream!);
     expect(
       Object.values(snapshot.state.messages).at(-1)?.wasDelivered
     ).toBeDefined();

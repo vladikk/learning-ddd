@@ -4,7 +4,7 @@
   "description": "Tickets Subsystem",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx ts-node-dev --respawn ./src/index.ts",
+    "start:dev": "npx ts-node ./src/seed.ts && npx ts-node-dev --respawn ./src/index.ts",
     "test": "npx tsc && jest",
     "build": "tsc"
   },

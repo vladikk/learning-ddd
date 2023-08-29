@@ -10,30 +10,30 @@ import { Closing } from "./closing.policy";
 import { Delivery } from "./delivery.policy";
 import { Reassingment } from "./reassignment.policy";
 import { RequestedEscalation } from "./requested-escalation.policy";
-import { ticketProjectorStore } from "./stores";
 import { Ticket } from "./ticket.aggregate";
 import { Tickets } from "./ticket.projector";
+import {
+  PostgresProjectorStore,
+  PostgresStore,
+} from "@rotorsoft/eventually-pg";
+
+// mock auth middleware
+const userId = randomUUID();
+const mockedAuth = (
+  req: Request & { actor?: Actor },
+  _: Response,
+  next: NextFunction
+): void => {
+  req.actor = {
+    id: userId,
+    name: "mocked user name",
+    roles: [],
+  };
+  next();
+};
 
 bootstrap(async () => {
-  // TODO: move to CI/CD pipeline as migration step
-  await store().seed();
-  await ticketProjectorStore.seed();
-
-  // mock auth middleware
-  const userId = randomUUID();
-  const mockedAuth = (
-    req: Request & { actor?: Actor },
-    _: Response,
-    next: NextFunction
-  ): void => {
-    req.actor = {
-      id: userId,
-      name: "mocked user name",
-      roles: [],
-    };
-    next();
-  };
-
+  store(PostgresStore("tickets"));
   const express = app(new ExpressApp())
     .with(Ticket)
     .with(Assignment)
@@ -42,8 +42,13 @@ bootstrap(async () => {
     .with(RequestedEscalation)
     .with(AutomaticEscalation, { scope: "public" })
     .with(Closing, { scope: "public" })
-    .with(Tickets, { store: ticketProjectorStore })
-    .build([mockedAuth]);
+    .with(Tickets, {
+      projector: {
+        store: PostgresProjectorStore("tickets_projection"),
+        indexes: [{ userId: "asc" }, { agentId: "asc" }],
+      },
+    })
+    .build({ middleware: [mockedAuth] });
 
   //-------------------------------------------------------------------------------------------------------------------
   //-- A little .hbs playground to watch ticket projections in real time
@@ -68,11 +73,8 @@ bootstrap(async () => {
 
   app().on("projection", async ({ factory, results }) => {
     console.log(factory.name, results);
-    const id = results.upserted.at(0)?.where.id;
-    id &&
-      (await client().read(Tickets, id, (ticket) =>
-        watching.send(ticket.state)
-      ));
+    const tickets = await client().read(Tickets, { limit: 100 });
+    tickets.map((ticket) => watching.send(ticket.state));
   });
   //-------------------------------------------------------------------------------------------------------------------
 

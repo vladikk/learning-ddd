@@ -1,4 +1,4 @@
-import { app, broker, client, dispose } from "@rotorsoft/eventually";
+import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Chance } from "chance";
 import { Closing } from "../closing.policy";
 import { Priority } from "../schemas";
@@ -39,9 +39,10 @@ describe("closing policy", () => {
       created: new Date(),
       metadata: { correlation: "", causation: {} },
     });
+    await sleep(100); // wait for policy
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, t.stream || "");
+    const snapshot = await client().load(Ticket, t.stream!);
     expect(snapshot.state.closedById).toBeDefined();
   });
 });

@@ -1,4 +1,4 @@
-import { client, InferProjector } from "@rotorsoft/eventually";
+import { client, InferProjector, prj } from "@rotorsoft/eventually";
 import { TicketProjectorSchemas } from "./schemas";
 
 export const Tickets = (): InferProjector<typeof TicketProjectorSchemas> => ({
@@ -7,100 +7,49 @@ export const Tickets = (): InferProjector<typeof TicketProjectorSchemas> => ({
   on: {
     TicketOpened: ({ stream, data }) => {
       const { message, messageId, ...other } = data;
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              ...other,
-              messages: 1,
-            },
-          },
-        ],
+      return prj({
+        id: stream,
+        ...other,
+        messages: 1,
       });
     },
-    TicketClosed: ({ stream, data }) => {
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              closedById: data.closedById,
-            },
-          },
-        ],
+    TicketClosed: ({ stream, data }) =>
+      prj({
+        id: stream,
+        ...data,
+      }),
+    TicketAssigned: ({ stream, data }) =>
+      prj({
+        id: stream,
+        ...data,
+      }),
+    MessageAdded: async ({ stream }, map) => {
+      const messages =
+        map.records.get(stream)?.messages ??
+        (await client().read(Tickets, stream)).at(0)?.state.messages ??
+        0;
+      return prj({
+        id: stream,
+        messages: messages + 1,
       });
     },
-    TicketAssigned: ({ stream, data }) => {
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              agentId: data.agentId,
-              escalateAfter: data.escalateAfter,
-              reassignAfter: data.reassignAfter,
-            },
-          },
-        ],
-      });
-    },
-    MessageAdded: async ({ stream, data }) => {
-      let messages = 0;
-      await client().read(Tickets, stream, (r) => {
-        messages = r.state.messages;
-      });
-      return {
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              messages: messages + 1,
-            },
-          },
-        ],
-      };
-    },
-    TicketEscalated: ({ stream, data }) => {
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              escalationId: data.escalationId,
-            },
-          },
-        ],
-      });
-    },
-    TicketReassigned: ({ stream, data }) => {
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              agentId: data.agentId,
-              escalateAfter: data.escalateAfter,
-              reassignAfter: data.reassignAfter,
-            },
-          },
-        ],
-      });
-    },
-    TicketResolved: ({ stream, data }) => {
-      return Promise.resolve({
-        upserts: [
-          {
-            where: { id: stream },
-            values: {
-              resolvedById: data.resolvedById,
-            },
-          },
-        ],
-      });
-    },
-    TicketEscalationRequested: () => Promise.resolve({}),
-    MessageDelivered: () => Promise.resolve({}),
-    MessageRead: () => Promise.resolve({}),
+    TicketEscalated: ({ stream, data }) =>
+      prj({
+        id: stream,
+        escalationId: data.escalationId,
+      }),
+    TicketReassigned: ({ stream, data }) =>
+      prj({
+        id: stream,
+        ...data,
+      }),
+    TicketResolved: ({ stream, data }) =>
+      prj({
+        id: stream,
+        ...data,
+      }),
+    TicketEscalationRequested: () => prj(),
+    MessageDelivered: () => prj(),
+    MessageRead: () => prj(),
   },
 });

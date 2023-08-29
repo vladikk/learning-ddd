@@ -37,23 +37,19 @@ describe("tickets projector", () => {
     await closeTicket(t);
     await broker().drain();
 
-    const records: Array<State> = [];
-    const count = await client().read(Tickets, t.stream || "", ({ state }) => {
-      expect(state.id).toBe(t.stream);
-      expect(state.userId).toBeDefined();
-      expect(state.agentId).toBeDefined();
-      expect(state.title).toBe(title);
-      expect(state.messages).toBe(2);
-      expect(state.closedById).toBeDefined();
-      expect(state.resolvedById).toBeDefined();
-      expect(state.escalationId).toBeDefined();
-      expect(state.closeAfter).toBeDefined();
-      expect(state.escalateAfter).toBeDefined();
-      expect(state.reassignAfter).toBeDefined();
-      records.push(state);
-    });
-    expect(count).toBe(1);
+    const state = (await client().read(Tickets, t.stream!)).at(0)?.state!;
+    expect(state.id).toBe(t.stream);
+    expect(state.userId).toBeDefined();
+    expect(state.agentId).toBeDefined();
+    expect(state.title).toBe(title);
+    expect(state.messages).toBe(2);
+    expect(state.closedById).toBeDefined();
+    expect(state.resolvedById).toBeDefined();
+    expect(state.escalationId).toBeDefined();
+    expect(state.closeAfter).toBeDefined();
+    expect(state.escalateAfter).toBeDefined();
+    expect(state.reassignAfter).toBeDefined();
     // just to check projection while preparing test
-    console.table(records);
+    console.table(state);
   });
 });

@@ -31,9 +31,10 @@ describe("automatic escalation policy", () => {
       created: new Date(),
       metadata: { correlation: "", causation: {} },
     });
+    await sleep(100); // wait for policy
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, t.stream || "");
+    const snapshot = await client().load(Ticket, t.stream!);
     expect(snapshot.state.escalationId).toBeDefined();
   });
 });

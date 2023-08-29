@@ -1,5 +1,5 @@
 import {
-  bind,
+  emit,
   Infer,
   InferAggregate,
   Invariant,
@@ -58,26 +58,21 @@ export const Ticket = (
         },
       };
     },
-    TicketClosed: (state, { data }) => ({ ...state, ...data }),
-    TicketAssigned: (state, { data }) => ({ ...state, ...data }),
-    MessageAdded: (state, { data }) => {
-      const { messages, ...other } = state;
-      const { messageId, from, to, body, attachments } = data;
-      messages[messageId] = { messageId, from, to, body, attachments };
-      return { ...other, messages };
+    TicketClosed: (_, { data }) => data,
+    TicketAssigned: (_, { data }) => data,
+    MessageAdded: (_, { data }) => {
+      return { messages: { [data.messageId]: { ...data } } };
     },
-    TicketEscalationRequested: (state, { data }) => ({ ...state, ...data }),
-    TicketEscalated: (state, { data }) => ({ ...state, ...data }),
-    TicketReassigned: (state, { data }) => ({ ...state, ...data }),
-    MessageDelivered: (state, { data }) => {
-      state.messages[data.messageId].wasDelivered = true;
-      return { ...state };
-    },
-    MessageRead: (state, { data }) => {
-      state.messages[data.messageId].wasRead = true;
-      return { ...state };
-    },
-    TicketResolved: (state, { data }) => ({ ...state, ...data }),
+    TicketEscalationRequested: (_, { data }) => data,
+    TicketEscalated: (_, { data }) => data,
+    TicketReassigned: (_, { data }) => data,
+    MessageDelivered: (_, { data }) => ({
+      messages: { [data.messageId]: { wasDelivered: true } },
+    }),
+    MessageRead: (_, { data }) => ({
+      messages: { [data.messageId]: { wasRead: true } },
+    }),
+    TicketResolved: (_, { data }) => data,
   },
 
   given: {
@@ -95,32 +90,22 @@ export const Ticket = (
   on: {
     OpenTicket: (data, state, actor) => {
       if (state.productId) throw new errors.TicketCannotOpenTwiceError(stream);
-      return Promise.resolve([
-        bind("TicketOpened", {
-          ...data,
-          userId: actor?.id,
-          messageId: randomUUID(),
-        }),
-      ]);
+      return emit("TicketOpened", {
+        ...data,
+        userId: actor?.id!,
+        messageId: randomUUID(),
+      });
     },
-    CloseTicket: (data, state, actor) => {
-      return Promise.resolve([
-        bind("TicketClosed", { ...data, closedById: actor?.id || "" }),
-      ]);
-    },
-    AssignTicket: (data, state) => {
-      return Promise.resolve([bind("TicketAssigned", data)]);
-    },
-    AddMessage: (data, state, actor) => {
-      return Promise.resolve([
-        bind("MessageAdded", {
-          ...data,
-          from: actor?.id,
-          messageId: randomUUID(),
-        }),
-      ]);
-    },
-    RequestTicketEscalation: (data, state, actor) => {
+    CloseTicket: (_, __, actor) =>
+      emit("TicketClosed", { closedById: actor?.id! }),
+    AssignTicket: (data) => emit("TicketAssigned", data),
+    AddMessage: (data, _, actor) =>
+      emit("MessageAdded", {
+        ...data,
+        from: actor?.id!,
+        messageId: randomUUID(),
+      }),
+    RequestTicketEscalation: (_, state, actor) => {
       // escalation can only be requested after window expired
       if (state.escalateAfter && state.escalateAfter > new Date())
         throw new errors.TicketEscalationError(
@@ -129,13 +114,10 @@ export const Ticket = (
           "Cannot escalate before due date"
         );
 
-      return Promise.resolve([
-        bind("TicketEscalationRequested", {
-          ...data,
-          requestedById: actor?.id || "",
-          requestId: randomUUID(),
-        }),
-      ]);
+      return emit("TicketEscalationRequested", {
+        requestedById: actor?.id!,
+        requestId: randomUUID(),
+      });
     },
     EscalateTicket: (data, state, actor) => {
       // only if ticket has not been escalated before?
@@ -146,9 +128,7 @@ export const Ticket = (
           "Cannot escalate more than once"
         );
 
-      return Promise.resolve([
-        bind("TicketEscalated", { ...data, escalationId: randomUUID() }),
-      ]);
+      return emit("TicketEscalated", { ...data, escalationId: randomUUID() });
     },
     ReassignTicket: (data, state, actor) => {
       // is escalated
@@ -176,12 +156,12 @@ export const Ticket = (
           "Cannot reassign after agent acknowledged"
         );
 
-      return Promise.resolve([bind("TicketReassigned", { ...data })]);
+      return emit("TicketReassigned", data);
     },
     MarkMessageDelivered: (data, state) => {
       if (!state.messages[data.messageId])
         throw new errors.MessageNotFoundError(data.messageId);
-      return Promise.resolve([bind("MessageDelivered", { ...data })]);
+      return emit("MessageDelivered", data);
     },
     AcknowledgeMessage: (data, state, actor) => {
       const msg = state.messages[data.messageId];
@@ -196,12 +176,9 @@ export const Ticket = (
           "Must be receiver to ack"
         );
 
-      return Promise.resolve([bind("MessageRead", { ...data })]);
+      return emit("MessageRead", data);
     },
-    MarkTicketResolved: (data, state, actor) => {
-      return Promise.resolve([
-        bind("TicketResolved", { ...data, resolvedById: actor?.id || "" }),
-      ]);
-    },
+    MarkTicketResolved: (_, __, actor) =>
+      emit("TicketResolved", { resolvedById: actor?.id! }),
   },
 });

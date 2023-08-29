@@ -48,7 +48,7 @@ describe("ticket", () => {
     await requestTicketEscalation(t);
     await escalateTicket(t);
 
-    const snapshot = await client().load(Ticket, t.stream || "", false);
+    const snapshot = await client().load(Ticket, t.stream!);
     const message = Object.values(snapshot.state.messages).at(-1);
 
     expect(snapshot.state.title).toEqual(title);
@@ -58,12 +58,12 @@ describe("ticket", () => {
     expect(snapshot.applyCount).toBe(5);
 
     await reassignTicket(t);
-    await markMessageDelivered(t, message?.messageId || "");
-    await acknowledgeMessage(target(to, t.stream), message?.messageId || "");
+    await markMessageDelivered(t, message?.messageId!);
+    await acknowledgeMessage(target(to, t.stream), message?.messageId!);
     await markTicketResolved(t);
     await closeTicket(t);
 
-    const snapshot2 = await client().load(Ticket, t.stream || "");
+    const snapshot2 = await client().load(Ticket, t.stream!);
     const message2 = Object.values(snapshot2.state.messages).at(-1);
 
     expect(snapshot2.state.agentId).not.toEqual(agentId);

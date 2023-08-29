@@ -1,5 +1,5 @@
-import { client, Infer, InferPolicy } from "@rotorsoft/eventually";
-import { ReassingmentSchemas, TicketProjection } from "./schemas";
+import { client, InferPolicy } from "@rotorsoft/eventually";
+import { ReassingmentSchemas } from "./schemas";
 import { reassignAgent } from "./services/agent";
 import { Ticket } from "./ticket.aggregate";
 import { Tickets } from "./ticket.projector";
@@ -14,21 +14,16 @@ export const Reassingment = (): InferPolicy<typeof ReassingmentSchemas> => ({
     ReassignmentCronTriggered: () => {
       setImmediate(async () => {
         // load batch of tickets with expired agent response window
-        const expired: Array<Infer<typeof TicketProjection>> = [];
-        await client().read(
-          Tickets,
-          {
-            where: {
-              reassignAfter: { operator: "lt", value: new Date() },
-            },
-            limit: BATCH_SIZE,
+        const expired = await client().read(Tickets, {
+          where: {
+            reassignAfter: { lt: new Date() },
           },
-          (p) => expired.push(p.state)
-        );
+          limit: BATCH_SIZE,
+        });
         for (const ticket of expired) {
-          const agent = await reassignAgent(ticket);
+          const agent = await reassignAgent(ticket.state);
           await client().command(Ticket, "ReassignTicket", agent, {
-            stream: ticket.id,
+            stream: ticket.state.id,
           });
         }
         expired.length === BATCH_SIZE &&

@@ -28,6 +28,8 @@ export const Ticket = z.object({
   userId: z.string().uuid(),
   messages: z.record(z.string().uuid(), Message),
   agentId: z.string().uuid().optional(),
+  requestId: z.string().uuid().optional(),
+  requestedById: z.string().uuid().optional(),
   escalationId: z.string().uuid().optional(),
   resolvedById: z.string().uuid().optional(),
   closedById: z.string().uuid().optional(),

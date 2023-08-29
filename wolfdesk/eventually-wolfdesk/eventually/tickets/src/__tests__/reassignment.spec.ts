@@ -1,4 +1,4 @@
-import { app, broker, client, dispose } from "@rotorsoft/eventually";
+import { app, broker, client, dispose, sleep } from "@rotorsoft/eventually";
 import { Ticket } from "../ticket.aggregate";
 import { Chance } from "chance";
 import { assignTicket, escalateTicket, openTicket, target } from "./commands";
@@ -36,9 +36,10 @@ describe("reassignment policy", () => {
       created: new Date(),
       metadata: { correlation: "", causation: {} },
     });
+    await sleep(100); // wait for policy
     await broker().drain();
 
-    const snapshot = await client().load(Ticket, t.stream || "");
+    const snapshot = await client().load(Ticket, t.stream!);
     expect(snapshot.state.agentId).toBeDefined();
     expect(snapshot.state.agentId).not.toEqual(agentId);
     expect(snapshot.state.reassignAfter?.getTime()).toBeGreaterThan(
