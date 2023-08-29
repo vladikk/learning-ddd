@@ -48,7 +48,7 @@ bootstrap(async () => {
         indexes: [{ userId: "asc" }, { agentId: "asc" }],
       },
     })
-    .build({ middleware: [mockedAuth] });
+    .build({ middleware: [mockedAuth], home: true, cors: { origin: "*" } });
 
   //-------------------------------------------------------------------------------------------------------------------
   //-- A little .hbs playground to watch ticket projections in real time
