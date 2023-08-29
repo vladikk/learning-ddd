@@ -30,3 +30,7 @@ We used Event Storming to model the system following the [requirements](../READM
 Run the service with `yarn start:dev` and navigate to [http://localhost:3000](http://localhost:3000)
 
 If everything is properly configured, you will see the home page of the service, including the model and OpenAPI specification of the public endpoints.
+
+![Running Model](./assets/running-model.png)
+
+![Running Swagger](./assets/running-swagger.png)
