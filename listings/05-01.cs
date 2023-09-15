@@ -6,4 +6,4 @@ var xml = ConvertJsonToXml(json);
 WriteFile(job.Destination, xml.ToString());
 DB.MarkJobAsCompleted(job);
 
-DB.Commit()
+DB.Commit();
